@@ -27,7 +27,6 @@ jobs:
         with:
           python-version: "3.11"
           cache: "pip"
-          cache: "pip"
           cache-dependency-path: apps/ai-service/requirements.txt
 
       - name: Install dependencies
