@@ -1,5 +1,8 @@
 # BioAI Hub — Medical Image Analysis Platform
 
+[![AI Service Tests](https://github.com/torillotomas/bioai-hub/actions/workflows/ai-service.yml/badge.svg)](https://github.com/torillotomas/bioai-hub/actions/workflows/ai-service.yml)
+[![Frontend Type Check](https://github.com/torillotomas/bioai-hub/actions/workflows/frontend.yml/badge.svg)](https://github.com/torillotomas/bioai-hub/actions/workflows/frontend.yml)
+
 Platform for medical image analysis using artificial intelligence. Upload a chest X-ray and get an automatic diagnosis in seconds.
 
 **Stack:** React + Vite + TypeScript · NestJS · Python + FastAPI + PyTorch
