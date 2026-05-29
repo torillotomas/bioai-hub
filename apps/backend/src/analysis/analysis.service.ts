@@ -28,7 +28,7 @@ export class AnalysisService {
 
     this.logger.log(`Análisis iniciado — id: ${analysisId} | file: ${file.originalname}`);
 
-    const result = await this.aiClient.predict({
+    const result = await this.aiClient.predictWithCam({
       image_b64: file.buffer.toString("base64"),
       image_format: file.mimetype.split("/")[1],
       metadata: {
@@ -49,6 +49,7 @@ export class AnalysisService {
       inference_time_ms: result.inference_time_ms,
       image_hash_sha256: imageHash,
       user_id: userId ?? null,
+      heatmap_b64: result.heatmap_b64 ?? null,
     });
     await this.analysisRepo.save(entity);
 

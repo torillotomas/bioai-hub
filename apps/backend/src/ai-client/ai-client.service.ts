@@ -22,8 +22,15 @@ export class AiClientService {
 
   constructor(private readonly httpService: HttpService) {}
 
+  async predictWithCam(payload: PredictPayload): Promise<AnalysisResult> {
+    return this._call(`${this.aiServiceUrl}/predict-with-cam`, payload);
+  }
+
   async predict(payload: PredictPayload): Promise<AnalysisResult> {
-    const url = `${this.aiServiceUrl}/predict`;
+    return this._call(`${this.aiServiceUrl}/predict`, payload);
+  }
+
+  private async _call(url: string, payload: PredictPayload): Promise<AnalysisResult> {
     this.logger.log(`Llamando a AI service: ${url}`);
 
     try {

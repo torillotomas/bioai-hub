@@ -32,6 +32,9 @@ export class Analysis {
   @Column({ nullable: true, type: "text" })
   user_id!: string | null;
 
+  @Column({ nullable: true, type: "text" })
+  heatmap_b64!: string | null;
+
   @CreateDateColumn()
   created_at!: Date;
 }

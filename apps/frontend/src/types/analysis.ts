@@ -23,6 +23,7 @@ export interface AnalysisResult {
   class_scores: ClassScores;
   model_version: string;
   inference_time_ms: number;
+  heatmap_b64?: string;
 }
 
 export interface AnalysisAudit {

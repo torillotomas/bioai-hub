@@ -1,6 +1,7 @@
 import type { AnalysisResponse } from "../../types/analysis";
 import { ConfidenceBadge } from "./ConfidenceBadge";
 import { ProbabilityChart } from "./ProbabilityChart";
+import { HeatmapOverlay } from "./HeatmapOverlay";
 
 interface DiagnosisCardProps {
   data: AnalysisResponse;
@@ -37,6 +38,11 @@ export function DiagnosisCard({ data, onReset }: DiagnosisCardProps) {
           </p>
           <ProbabilityChart scores={result.class_scores} prediction={result.prediction} />
         </div>
+
+        {/* Grad-CAM heatmap */}
+        {result.heatmap_b64 && (
+          <HeatmapOverlay heatmapB64={result.heatmap_b64} prediction={result.prediction} />
+        )}
 
         {/* Metadata técnica */}
         <div className="grid grid-cols-2 gap-3 pt-2 border-t border-gray-100">
