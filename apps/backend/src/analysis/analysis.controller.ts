@@ -1,6 +1,7 @@
 import {
   Controller,
   Post,
+  Get,
   UploadedFile,
   UseInterceptors,
   Body,
@@ -19,6 +20,11 @@ const MAX_FILE_SIZE = parseInt(process.env.MAX_FILE_SIZE ?? "10485760", 10);
 @Controller("analysis")
 export class AnalysisController {
   constructor(private readonly analysisService: AnalysisService) {}
+
+  @Get()
+  findAll() {
+    return this.analysisService.findAll();
+  }
 
   @Post()
   @UseInterceptors(
@@ -42,15 +48,12 @@ export class AnalysisController {
     @UploadedFile() file: Express.Multer.File,
     @Body("metadata") metadataRaw: string
   ) {
-    if (!file) {
-      throw new BadRequestException("Se requiere un archivo de imagen.");
-    }
+    if (!file) throw new BadRequestException("Se requiere un archivo de imagen.");
 
-    if (file.size > MAX_FILE_SIZE) {
+    if (file.size > MAX_FILE_SIZE)
       throw new PayloadTooLargeException(
         `El archivo excede el límite de ${MAX_FILE_SIZE / 1024 / 1024}MB.`
       );
-    }
 
     let metadata: CreateAnalysisDto;
     try {
@@ -59,9 +62,8 @@ export class AnalysisController {
       throw new BadRequestException("El campo 'metadata' debe ser un JSON válido.");
     }
 
-    if (!metadata.patientId || !metadata.studyType) {
+    if (!metadata.patientId || !metadata.studyType)
       throw new BadRequestException("metadata debe incluir patientId y studyType.");
-    }
 
     return this.analysisService.analyze(file, metadata);
   }
