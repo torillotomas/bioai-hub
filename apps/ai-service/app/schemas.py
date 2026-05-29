@@ -46,3 +46,7 @@ class PredictResponse(BaseModel):
     class_scores: dict[str, float]
     model_version: str
     inference_time_ms: int
+
+
+class PredictWithCamResponse(PredictResponse):
+    heatmap_b64: str
