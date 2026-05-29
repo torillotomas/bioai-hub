@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+  frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:3000
+    volumes:
+      - ./apps/frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - BACKEND_PORT=3000
+      - AI_SERVICE_URL=http://ai-service:8000
+      - MAX_FILE_SIZE=10485760
+    volumes:
+      - ./apps/backend:/app
+      - /app/node_modules
+    depends_on:
+      - ai-service
+
+  ai-service:
+    build:
+      context: ./apps/ai-service
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - AI_SERVICE_PORT=8000
+      - MODEL_PATH=./models/model.pth
+      - MODEL_VERSION=v1.0.0
+    volumes:
+      - ./apps/ai-service:/app
+      - ./apps/ai-service/models:/app/models
+
+networks:
+  default:
+    name: bioai-network
