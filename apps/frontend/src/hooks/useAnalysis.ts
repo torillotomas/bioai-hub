@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { analyzeImage } from "../services/analysisApi";
+import { useAnalysisStore } from "../stores/analysisStore";
 import type { AnalysisResponse } from "../types/analysis";
 
 type Status = "idle" | "uploading" | "analyzing" | "done" | "error";
@@ -8,6 +9,7 @@ export function useAnalysis() {
   const [status, setStatus] = useState<Status>("idle");
   const [result, setResult] = useState<AnalysisResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const addToHistory = useAnalysisStore((s) => s.addToHistory);
 
   async function analyze(file: File, patientId: string, studyType: string) {
     setStatus("uploading");
@@ -18,6 +20,7 @@ export function useAnalysis() {
       setStatus("analyzing");
       const data = await analyzeImage(file, patientId, studyType);
       setResult(data);
+      addToHistory(data); // guardar en store persistido
       setStatus("done");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error inesperado");
@@ -31,5 +34,11 @@ export function useAnalysis() {
     setError(null);
   }
 
-  return { status, result, error, analyze, reset };
+  function loadFromHistory(item: AnalysisResponse) {
+    setResult(item);
+    setStatus("done");
+    setError(null);
+  }
+
+  return { status, result, error, analyze, reset, loadFromHistory };
 }
