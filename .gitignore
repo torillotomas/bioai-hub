@@ -43,6 +43,9 @@ Thumbs.db
 *.log
 logs/
 
+# Claude Code
+CLAUDE.md
+
 # NestJS
 apps/backend/dist/
 apps/backend/analyses.db
