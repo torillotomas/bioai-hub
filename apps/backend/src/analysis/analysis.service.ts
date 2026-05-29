@@ -20,7 +20,8 @@ export class AnalysisService {
 
   async analyze(
     file: Express.Multer.File,
-    metadata: CreateAnalysisDto
+    metadata: CreateAnalysisDto,
+    userId?: string
   ): Promise<AnalysisResponseDto> {
     const imageHash = createHash("sha256").update(file.buffer).digest("hex");
     const analysisId = uuidv4();
@@ -47,6 +48,7 @@ export class AnalysisService {
       model_version: result.model_version,
       inference_time_ms: result.inference_time_ms,
       image_hash_sha256: imageHash,
+      user_id: userId ?? null,
     });
     await this.analysisRepo.save(entity);
 

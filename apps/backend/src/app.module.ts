@@ -4,15 +4,17 @@ import { APP_FILTER, APP_INTERCEPTOR } from "@nestjs/core";
 import { DatabaseModule } from "./database/database.module";
 import { HealthModule } from "./health/health.module";
 import { AnalysisModule } from "./analysis/analysis.module";
+import { AuthModule } from "./auth/auth.module";
 import { GlobalExceptionFilter } from "./common/filters/global-exception.filter";
 import { LoggingInterceptor } from "./common/interceptors/logging.interceptor";
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({ isGlobal: true, envFilePath: [".env", "../../.env"] }),
     DatabaseModule,
     HealthModule,
     AnalysisModule,
+    AuthModule,
   ],
   providers: [
     { provide: APP_FILTER,      useClass: GlobalExceptionFilter },
