@@ -1,9 +1,6 @@
 import axios from "axios";
+import { apiClient } from "./apiClient";
 import type { AnalysisResponse, AnalysisErrorResponse } from "../types/analysis";
-
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3000",
-});
 
 export async function analyzeImage(
   file: File,
@@ -19,7 +16,7 @@ export async function analyzeImage(
   );
 
   try {
-    const { data } = await api.post<AnalysisResponse>("/api/v1/analysis", form);
+    const { data } = await apiClient.post<AnalysisResponse>("/api/v1/analysis", form);
     return data;
   } catch (err) {
     if (axios.isAxiosError(err) && err.response) {

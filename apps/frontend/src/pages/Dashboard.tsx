@@ -6,6 +6,7 @@ import { LoadingSkeleton } from "../components/shared/LoadingSkeleton";
 import { ErrorBanner } from "../components/shared/ErrorBanner";
 import { HistoryPanel } from "../components/history/HistoryPanel";
 import { useAnalysis } from "../hooks/useAnalysis";
+import { useAuth } from "../context/AuthContext";
 import type { AnalysisResponse } from "../types/analysis";
 
 const STUDY_TYPES = [
@@ -19,6 +20,7 @@ export function Dashboard() {
   const [patientId, setPatientId] = useState("");
   const [studyType, setStudyType] = useState("chest_xray");
   const { status, result, error, analyze, reset, loadFromHistory } = useAnalysis();
+  const { user, logout } = useAuth();
 
   const isLoading = status === "uploading" || status === "analyzing";
 
@@ -41,16 +43,27 @@ export function Dashboard() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="max-w-5xl mx-auto flex items-center gap-3">
-          <div className="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center">
-            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
+        <div className="max-w-5xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center">
+              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+            </div>
+            <div>
+              <h1 className="text-lg font-bold text-gray-900">BioAI Hub</h1>
+              <p className="text-xs text-gray-400">Medical Image Analysis Platform</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-lg font-bold text-gray-900">BioAI Hub</h1>
-            <p className="text-xs text-gray-400">Medical Image Analysis Platform</p>
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-gray-500">{user?.email}</span>
+            <button
+              onClick={() => void logout()}
+              className="text-sm text-gray-500 hover:text-gray-800 transition-colors"
+            >
+              Cerrar sesión
+            </button>
           </div>
         </div>
       </header>

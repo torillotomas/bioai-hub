@@ -29,6 +29,9 @@ export class Analysis {
   @Column()
   image_hash_sha256!: string;
 
+  @Column({ nullable: true, type: "text" })
+  user_id!: string | null;
+
   @CreateDateColumn()
   created_at!: Date;
 }
