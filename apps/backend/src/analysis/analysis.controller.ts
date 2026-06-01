@@ -30,8 +30,9 @@ export class AnalysisController {
   constructor(private readonly analysisService: AnalysisService) {}
 
   @Get()
-  findAll() {
-    return this.analysisService.findAll();
+  @UseGuards(JwtAuthGuard)
+  findAll(@Req() req: AuthenticatedRequest) {
+    return this.analysisService.findAll(req.user.userId);
   }
 
   @Post()

@@ -69,8 +69,9 @@ export class AnalysisService {
     };
   }
 
-  async findAll(): Promise<Analysis[]> {
+  async findAll(userId: string): Promise<Analysis[]> {
     return this.analysisRepo.find({
+      where: { user_id: userId },
       order: { created_at: "DESC" },
       take: 20,
     });
