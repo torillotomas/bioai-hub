@@ -1,12 +1,14 @@
-FROM node:20-slim
+FROM node:22-slim
+
+RUN npm install -g pnpm
 
 WORKDIR /app
 
-COPY package.json .
-RUN npm install
+COPY package.json ./
+RUN pnpm install
 
 COPY . .
 
 EXPOSE 3000
 
-CMD ["npm", "run", "dev"]
+CMD ["pnpm", "run", "dev"]
