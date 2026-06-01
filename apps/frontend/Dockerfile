@@ -1,14 +1,12 @@
 FROM node:22-slim
 
-RUN npm install -g pnpm
-
 WORKDIR /app
 
 COPY package.json ./
-RUN pnpm install
+RUN npm install
 
 COPY . .
 
 EXPOSE 5173
 
-CMD ["pnpm", "run", "dev", "--", "--host"]
+CMD ["npm", "run", "dev", "--", "--host"]
