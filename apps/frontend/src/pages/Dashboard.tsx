@@ -60,7 +60,7 @@ export function Dashboard() {
             <span className="text-sm text-gray-500">{user?.email}</span>
             <button
               onClick={() => void logout()}
-              className="text-sm text-gray-500 hover:text-gray-800 transition-colors"
+              className="text-sm text-gray-500 hover:text-gray-800 transition-colors px-3 py-2.5 rounded-lg hover:bg-gray-100 min-h-[44px]"
             >
               Cerrar sesión
             </button>
