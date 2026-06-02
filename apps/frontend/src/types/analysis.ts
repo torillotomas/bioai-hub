@@ -12,8 +12,6 @@ export interface AnalysisMetadata {
 }
 
 export interface ClassScores {
-  NORMAL: number;
-  PNEUMONIA: number;
   [key: string]: number;
 }
 

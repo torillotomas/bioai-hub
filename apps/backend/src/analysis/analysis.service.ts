@@ -28,7 +28,7 @@ export class AnalysisService {
 
     this.logger.log(`Análisis iniciado — id: ${analysisId} | file: ${file.originalname}`);
 
-    const result = await this.aiClient.predictWithCam({
+    const result = await this.aiClient.predict({
       image_b64: file.buffer.toString("base64"),
       image_format: file.mimetype.split("/")[1],
       metadata: {

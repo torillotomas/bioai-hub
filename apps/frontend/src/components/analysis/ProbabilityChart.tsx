@@ -1,30 +1,31 @@
+import { translatePathology } from "../../utils/pathologyNames";
+
 interface ProbabilityChartProps {
   scores: Record<string, number>;
   prediction: string;
+  topN?: number;
 }
 
-const CLASS_COLORS: Record<string, string> = {
-  NORMAL: "bg-green-500",
-  PNEUMONIA: "bg-red-500",
-};
-
 const DEFAULT_COLOR = "bg-blue-500";
+const HIGH_CONFIDENCE_COLOR = "bg-red-500";
 
-export function ProbabilityChart({ scores, prediction }: ProbabilityChartProps) {
-  const sorted = Object.entries(scores).sort(([, a], [, b]) => b - a);
+export function ProbabilityChart({ scores, prediction, topN = 8 }: ProbabilityChartProps) {
+  const sorted = Object.entries(scores)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, topN);
 
   return (
     <div className="space-y-3">
       {sorted.map(([label, score]) => {
         const pct = Math.round(score * 100);
         const isWinner = label === prediction;
-        const barColor = CLASS_COLORS[label] ?? DEFAULT_COLOR;
+        const barColor = score >= 0.6 ? HIGH_CONFIDENCE_COLOR : DEFAULT_COLOR;
 
         return (
           <div key={label}>
             <div className="flex justify-between items-center mb-1">
               <span className={`text-sm font-medium ${isWinner ? "text-gray-800" : "text-gray-500"}`}>
-                {label}
+                {translatePathology(label)}
                 {isWinner && (
                   <span className="ml-2 text-xs font-semibold px-1.5 py-0.5 rounded bg-gray-100 text-gray-600">
                     predicción

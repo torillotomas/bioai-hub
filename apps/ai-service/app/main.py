@@ -6,32 +6,22 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.model.loader import load_model
-from app.schemas import PredictRequest, PredictResponse, PredictWithCamResponse
-from app.services.gradcam import GradCAM
+from app.schemas import PredictRequest, PredictResponse
 from app.services.predictor import Predictor
 
 _predictor: Predictor | None = None
-_gradcam: GradCAM | None = None
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global _predictor, _gradcam
-    try:
-        model = load_model(settings.model_path)
-        _predictor = Predictor(model)
-        _gradcam = GradCAM(model)
-        print(f"[startup] Modelo cargado desde '{settings.model_path}' ({settings.model_version})")
-    except FileNotFoundError as exc:
-        print(f"[startup][WARNING] {exc}")
-        _predictor = None
-        _gradcam = None
-
+    global _predictor
+    model = load_model()
+    _predictor = Predictor(model)
+    print(f"[startup] Modelo torchxrayvision cargado — {len(model.pathologies)} patologías")
     yield
-
     _predictor = None
-    _gradcam = None
     print("[shutdown] AI service detenido")
+
 
 
 app = FastAPI(
@@ -74,18 +64,3 @@ def predict(payload: PredictRequest) -> PredictResponse:
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Error de inferencia: {exc}")
 
-
-@app.post("/predict-with-cam", response_model=PredictWithCamResponse)
-def predict_with_cam(payload: PredictRequest) -> PredictWithCamResponse:
-    if _predictor is None or _gradcam is None:
-        raise HTTPException(
-            status_code=503,
-            detail="Modelo no disponible. Ejecutá 'python scripts/train.py' primero.",
-        )
-
-    try:
-        return _predictor.predict_with_cam(payload, _gradcam)
-    except ValueError as exc:
-        raise HTTPException(status_code=422, detail=str(exc))
-    except Exception as exc:
-        raise HTTPException(status_code=500, detail=f"Error de inferencia: {exc}")

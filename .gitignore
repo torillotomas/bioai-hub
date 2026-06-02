@@ -45,6 +45,8 @@ logs/
 
 # Claude Code
 CLAUDE.md
+CONTEXTO_SESION.md
+GSTACK_GUIDE.md
 
 # NestJS
 apps/backend/dist/

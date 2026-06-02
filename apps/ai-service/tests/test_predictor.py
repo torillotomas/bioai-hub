@@ -1,20 +1,31 @@
 import base64
-import math
+import torch
 from io import BytesIO
 
 import pytest
 from PIL import Image
 
-from app.model.architecture import BioAICNN, NUM_CLASSES, CLASS_NAMES
 from app.schemas import PredictRequest, ImageMetadata
 from app.services.predictor import Predictor
 
 
+class _MockXRVModel:
+    pathologies = [
+        "Atelectasis", "Consolidation", "Infiltration", "Pneumothorax",
+        "Edema", "Emphysema", "Fibrosis", "Effusion", "Pneumonia",
+        "Pleural_Thickening", "Cardiomegaly", "Nodule", "Mass", "Hernia",
+        "Lung Lesion", "Fracture", "Lung Opacity", "Enlarged Cardiomediastinum",
+    ]
+
+    def __call__(self, tensor):
+        return torch.rand(1, len(self.pathologies))
+
+    def eval(self):
+        return self
+
+
 def _make_predictor() -> Predictor:
-    """Predictor con pesos aleatorios (sin necesitar model.pth)."""
-    model = BioAICNN(num_classes=NUM_CLASSES)
-    model.eval()
-    return Predictor(model)
+    return Predictor(_MockXRVModel())
 
 
 def _image_b64(color: tuple = (128, 128, 128), size: tuple = (224, 224)) -> str:
@@ -31,13 +42,6 @@ def _make_payload(image_b64: str) -> PredictRequest:
     )
 
 
-def test_class_scores_sum_to_one():
-    predictor = _make_predictor()
-    response = predictor.predict(_make_payload(_image_b64()))
-    total = sum(response.class_scores.values())
-    assert math.isclose(total, 1.0, abs_tol=1e-4), f"Scores no suman 1: {total}"
-
-
 def test_confidence_in_range():
     predictor = _make_predictor()
     response = predictor.predict(_make_payload(_image_b64()))
@@ -47,15 +51,15 @@ def test_confidence_in_range():
 def test_prediction_is_known_class():
     predictor = _make_predictor()
     response = predictor.predict(_make_payload(_image_b64()))
-    assert response.prediction in CLASS_NAMES, (
-        f"'{response.prediction}' no está en {CLASS_NAMES}"
+    assert response.prediction in _MockXRVModel.pathologies, (
+        f"'{response.prediction}' no está en las patologías conocidas"
     )
 
 
-def test_class_scores_keys_match_class_names():
+def test_class_scores_keys_match_pathologies():
     predictor = _make_predictor()
     response = predictor.predict(_make_payload(_image_b64()))
-    assert set(response.class_scores.keys()) == set(CLASS_NAMES)
+    assert set(response.class_scores.keys()) == set(_MockXRVModel.pathologies)
 
 
 def test_inference_time_positive():
@@ -73,8 +77,7 @@ def test_pdf_bytes_raise_value_error():
 
 
 def test_different_image_sizes_handled():
-    """El pipeline debe manejar cualquier tamaño de entrada."""
     predictor = _make_predictor()
     for size in [(64, 64), (512, 300), (1024, 768)]:
         response = predictor.predict(_make_payload(_image_b64(size=size)))
-        assert response.prediction in CLASS_NAMES
+        assert response.prediction in _MockXRVModel.pathologies
