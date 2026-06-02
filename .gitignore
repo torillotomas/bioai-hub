@@ -53,3 +53,4 @@ apps/backend/dist/
 apps/backend/analyses.db
 test_xray.png
 validate-hito1.ps1
+.gstack/
