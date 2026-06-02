@@ -12,7 +12,7 @@ export function HistoryPanel({ onSelect }: HistoryPanelProps) {
   return (
     <aside className="w-64 shrink-0 bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
       <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-700">Historial</h3>
+        <h3 className="text-base font-semibold text-gray-800">Historial</h3>
         {history.length > 0 && (
           <button
             onClick={clearHistory}

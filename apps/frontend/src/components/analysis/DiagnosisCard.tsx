@@ -16,7 +16,7 @@ export function DiagnosisCard({ data, onReset }: DiagnosisCardProps) {
       {/* Header */}
       <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-gray-800">Resultado del análisis</h2>
+          <h2 className="text-xl font-semibold text-gray-800">Resultado del análisis</h2>
           <p className="text-xs text-gray-400 font-mono mt-0.5">ID: {analysis_id}</p>
         </div>
         <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">

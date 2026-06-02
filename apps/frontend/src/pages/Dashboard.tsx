@@ -88,7 +88,7 @@ export function Dashboard() {
 
           {status !== "done" && (
             <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 space-y-5">
-              <h2 className="text-base font-semibold text-gray-800">Nuevo análisis</h2>
+              <h2 className="text-lg font-semibold text-gray-800">Nuevo análisis</h2>
 
               {file ? (
                 <FilePreview file={file} onRemove={handleRemove} />
