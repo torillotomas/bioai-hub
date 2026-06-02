@@ -21,15 +21,15 @@ export function HistoryItem({ item, onClick }: HistoryItemProps) {
   return (
     <button
       onClick={() => onClick(item)}
-      className="w-full text-left px-3 py-2.5 rounded-lg hover:bg-gray-100 transition-colors group"
+      className="w-full text-left px-3 py-2.5 rounded-lg hover:bg-warm-surface2 transition-colors group"
     >
       <div className="flex items-center justify-between gap-2">
         <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${badgeColor}`}>
           {translatePathology(item.result.prediction)}
         </span>
-        <span className="text-xs text-gray-400">{pct}%</span>
+        <span className="text-xs text-warm-faint">{pct}%</span>
       </div>
-      <p className="text-xs text-gray-500 mt-1 truncate">{date}</p>
+      <p className="text-xs text-warm-muted mt-1 truncate">{date}</p>
     </button>
   );
 }

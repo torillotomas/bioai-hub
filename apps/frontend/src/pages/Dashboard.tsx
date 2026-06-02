@@ -40,9 +40,9 @@ export function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-warm-bg">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4">
+      <header className="bg-white border-b border-warm-border px-6 py-4">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center">
@@ -52,15 +52,15 @@ export function Dashboard() {
               </svg>
             </div>
             <div>
-              <h1 className="text-lg font-bold text-gray-900">BioAI Hub</h1>
-              <p className="text-xs text-gray-400">Medical Image Analysis Platform</p>
+              <h1 className="text-lg font-display font-normal text-warm-text">BioAI Hub</h1>
+              <p className="text-xs text-warm-faint">Medical Image Analysis Platform</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-500">{user?.email}</span>
+            <span className="text-sm text-warm-muted">{user?.email}</span>
             <button
               onClick={() => void logout()}
-              className="text-sm text-gray-500 hover:text-gray-800 transition-colors px-3 py-2.5 rounded-lg hover:bg-gray-100 min-h-[44px]"
+              className="text-sm text-warm-muted hover:text-warm-text transition-colors px-3 py-2.5 rounded-lg hover:bg-warm-surface2 min-h-[44px]"
             >
               Cerrar sesión
             </button>
@@ -87,8 +87,8 @@ export function Dashboard() {
           {isLoading && <LoadingSkeleton />}
 
           {status !== "done" && (
-            <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 space-y-5">
-              <h2 className="text-lg font-semibold text-gray-800">Nuevo análisis</h2>
+            <form onSubmit={handleSubmit} className="bg-white border border-warm-border rounded-2xl shadow-sm p-6 space-y-5">
+              <h2 className="text-lg font-semibold text-warm-text">Nuevo análisis</h2>
 
               {file ? (
                 <FilePreview file={file} onRemove={handleRemove} />
@@ -98,7 +98,7 @@ export function Dashboard() {
 
               <div className="grid grid-cols-1 xs:grid-cols-2 gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-warm-muted mb-1">
                     ID del paciente <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -107,18 +107,18 @@ export function Dashboard() {
                     onChange={(e) => setPatientId(e.target.value)}
                     placeholder="Ej: PAC-00123"
                     disabled={isLoading}
-                    className="w-full px-3 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent disabled:opacity-50 min-h-[44px]"
+                    className="w-full px-3 py-3 border border-warm-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent disabled:opacity-50 min-h-[44px]"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-warm-muted mb-1">
                     Tipo de estudio
                   </label>
                   <select
                     value={studyType}
                     onChange={(e) => setStudyType(e.target.value)}
                     disabled={isLoading}
-                    className="w-full px-3 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent disabled:opacity-50 min-h-[44px]"
+                    className="w-full px-3 py-3 border border-warm-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent disabled:opacity-50 min-h-[44px]"
                   >
                     {STUDY_TYPES.map((t) => (
                       <option key={t.value} value={t.value}>{t.label}</option>
