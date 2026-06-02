@@ -70,11 +70,8 @@ export function Dashboard() {
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10 flex flex-col sm:flex-row gap-6 items-start">
 
-        {/* Panel de historial */}
-        <HistoryPanel onSelect={handleHistorySelect} />
-
-        {/* Contenido principal */}
-        <div className="flex-1 space-y-6">
+        {/* Contenido principal — primero en mobile */}
+        <div className="flex-1 space-y-6 order-first">
 
           {status === "done" && result && (
             <DiagnosisCard data={result} onReset={handleReset} />
@@ -147,6 +144,9 @@ export function Dashboard() {
             </form>
           )}
         </div>
+
+        {/* Panel de historial — al final en mobile, sidebar en sm+ */}
+        <HistoryPanel onSelect={handleHistorySelect} />
       </main>
     </div>
   );
