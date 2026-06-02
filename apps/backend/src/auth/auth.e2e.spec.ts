@@ -29,7 +29,7 @@ async function buildApp(): Promise<INestApplication> {
     ],
   })
     .overrideProvider(AiClientService)
-    .useValue({ predictWithCam: jest.fn() })
+    .useValue({ predict: jest.fn() })
     .compile();
 
   const app = moduleRef.createNestApplication();
