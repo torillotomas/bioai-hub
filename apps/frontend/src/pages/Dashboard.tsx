@@ -68,7 +68,7 @@ export function Dashboard() {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-6 py-10 flex gap-6 items-start">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10 flex flex-col sm:flex-row gap-6 items-start">
 
         {/* Panel de historial */}
         <HistoryPanel onSelect={handleHistorySelect} />
@@ -96,7 +96,7 @@ export function Dashboard() {
                 <DropZone onFile={handleFile} disabled={isLoading} />
               )}
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 xs:grid-cols-2 gap-4 sm:grid-cols-2">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     ID del paciente <span className="text-red-500">*</span>
