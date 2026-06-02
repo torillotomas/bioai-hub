@@ -107,7 +107,7 @@ export function Dashboard() {
                     onChange={(e) => setPatientId(e.target.value)}
                     placeholder="Ej: PAC-00123"
                     disabled={isLoading}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent disabled:opacity-50"
+                    className="w-full px-3 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent disabled:opacity-50 min-h-[44px]"
                   />
                 </div>
                 <div>
@@ -118,7 +118,7 @@ export function Dashboard() {
                     value={studyType}
                     onChange={(e) => setStudyType(e.target.value)}
                     disabled={isLoading}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent disabled:opacity-50"
+                    className="w-full px-3 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent disabled:opacity-50 min-h-[44px]"
                   >
                     {STUDY_TYPES.map((t) => (
                       <option key={t.value} value={t.value}>{t.label}</option>
@@ -130,7 +130,7 @@ export function Dashboard() {
               <button
                 type="submit"
                 disabled={!file || !patientId || isLoading}
-                className="w-full py-2.5 px-4 bg-brand-600 hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors text-sm"
+                className="w-full py-3 px-4 bg-brand-600 hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors text-sm min-h-[44px]"
               >
                 {isLoading ? (
                   <span className="flex items-center justify-center gap-2">
