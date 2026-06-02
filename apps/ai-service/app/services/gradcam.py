@@ -4,67 +4,71 @@ import cv2
 import numpy as np
 import torch
 import torch.nn.functional as F
+import torchxrayvision as xrv
 from PIL import Image
-
-from app.model.architecture import BioAICNN
 
 
 class GradCAM:
     """
-    Grad-CAM sobre la última capa convolucional de BioAICNN (features[-1]).
-    Los hooks se registran una sola vez al construir la instancia.
+    Grad-CAM sobre denseblock4 de DenseNet121 (torchxrayvision).
+    Hookea model.features.denseblock4 — feature maps [1, 1024, 7×7] para input 224×224.
     """
 
-    def __init__(self, model: BioAICNN):
+    def __init__(self, model: xrv.models.DenseNet):
         self._model = model
         self._activations: torch.Tensor | None = None
         self._gradients: torch.Tensor | None = None
 
-        model.features[-1].register_forward_hook(self._fwd_hook)
-        model.features[-1].register_full_backward_hook(self._bwd_hook)
+        model.features.denseblock4.register_forward_hook(self._fwd_hook)
+        model.features.denseblock4.register_full_backward_hook(self._bwd_hook)
 
     def _fwd_hook(self, module, input, output):  # noqa: A002
-        self._activations = output
+        self._activations = output.detach()
 
     def _bwd_hook(self, module, grad_input, grad_output):
-        self._gradients = grad_output[0]
+        self._gradients = grad_output[0].detach()
 
-    def generate(self, tensor: torch.Tensor, class_idx: int, original_image: Image.Image) -> str:
+    def generate(
+        self,
+        tensor: torch.Tensor,
+        pathology_name: str,
+        original_image: Image.Image,
+    ) -> str:
         """
-        Devuelve la imagen original superpuesta con el mapa de calor, codificada en base64 JPEG.
-        `tensor` debe tener shape [1, 3, 224, 224].
+        Devuelve la imagen original superpuesta con el heatmap, codificada en base64 JPEG.
+        tensor: [1, 1, 224, 224] — mismo formato que la inferencia normal.
         """
+        pathologies = list(self._model.pathologies)
+        class_idx = pathologies.index(pathology_name) if pathology_name in pathologies else 0
+
         self._activations = None
         self._gradients = None
         self._model.eval()
 
-        logits = self._model(tensor)          # forward → activa el hook
+        output = self._model(tensor)           # forward → dispara fwd hook
         self._model.zero_grad()
-        logits[0, class_idx].backward()       # backward → activa el hook
+        output[0, class_idx].backward()        # backward → dispara bwd hook
 
         assert self._activations is not None and self._gradients is not None
 
-        # Pesos = promedio global de gradientes por canal → [1, C, 1, 1]
+        # Pesos: promedio global de gradientes por canal → [1, C, 1, 1]
         weights = self._gradients.mean(dim=(2, 3), keepdim=True)
 
-        # Combinación ponderada de feature maps → [1, 1, 28, 28]
+        # Suma ponderada de feature maps + ReLU → [7, 7]
         cam = F.relu((weights * self._activations).sum(dim=1, keepdim=True))
-        cam_np = cam[0, 0].detach().numpy()   # [28, 28]
+        cam_np = cam[0, 0].numpy()
 
         # Normalizar a [0, 1]
         cam_min, cam_max = cam_np.min(), cam_np.max()
-        if cam_max > cam_min:
-            cam_np = (cam_np - cam_min) / (cam_max - cam_min)
-        else:
-            cam_np = np.zeros_like(cam_np)
+        cam_np = (cam_np - cam_min) / (cam_max - cam_min) if cam_max > cam_min else np.zeros_like(cam_np)
 
-        # Redimensionar a 224x224 y aplicar colormap JET
+        # Redimensionar a 224×224 y aplicar colormap JET
         cam_resized = cv2.resize(cam_np, (224, 224))
         heatmap_bgr = cv2.applyColorMap(np.uint8(255 * cam_resized), cv2.COLORMAP_JET)
         heatmap_rgb = cv2.cvtColor(heatmap_bgr, cv2.COLOR_BGR2RGB)
 
-        # Superponer sobre imagen original
-        original_np = np.array(original_image.resize((224, 224)))
+        # Superponer sobre imagen original (RGB, redimensionada a 224×224)
+        original_np = np.array(original_image.resize((224, 224)).convert("RGB"))
         overlay = cv2.addWeighted(original_np, 0.6, heatmap_rgb, 0.4, 0)
 
         # Codificar como JPEG base64

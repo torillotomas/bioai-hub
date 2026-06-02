@@ -6,10 +6,10 @@ interface HeatmapOverlayProps {
 export function HeatmapOverlay({ heatmapB64, prediction }: HeatmapOverlayProps) {
   return (
     <div>
-      <p className="text-sm text-gray-500 font-medium uppercase tracking-wide mb-3">
+      <p className="text-sm text-warm-muted font-medium uppercase tracking-wide mb-3">
         Mapa de activación (Grad-CAM)
       </p>
-      <div className="relative rounded-xl overflow-hidden border border-gray-200">
+      <div className="relative rounded-xl overflow-hidden border border-warm-border">
         <img
           src={`data:image/jpeg;base64,${heatmapB64}`}
           alt={`Grad-CAM — ${prediction}`}
