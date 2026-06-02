@@ -1,198 +1,156 @@
-# BioAI Hub — Medical Image Analysis Platform
+# BioAI Hub
 
-[![AI Service Tests](https://github.com/torillotomas/bioai-hub/actions/workflows/ai-service.yml/badge.svg)](https://github.com/torillotomas/bioai-hub/actions/workflows/ai-service.yml)
-[![Frontend Type Check](https://github.com/torillotomas/bioai-hub/actions/workflows/frontend.yml/badge.svg)](https://github.com/torillotomas/bioai-hub/actions/workflows/frontend.yml)
+[![AI Service](https://github.com/torillotomas/bioai-hub/actions/workflows/ai-service.yml/badge.svg)](https://github.com/torillotomas/bioai-hub/actions/workflows/ai-service.yml)
+[![Frontend](https://github.com/torillotomas/bioai-hub/actions/workflows/frontend.yml/badge.svg)](https://github.com/torillotomas/bioai-hub/actions/workflows/frontend.yml)
+[![Backend](https://github.com/torillotomas/bioai-hub/actions/workflows/backend.yml/badge.svg)](https://github.com/torillotomas/bioai-hub/actions/workflows/backend.yml)
 
-Platform for medical image analysis using artificial intelligence. Upload a chest X-ray and get an automatic diagnosis in seconds.
+Plataforma para analizar radiografías de tórax con IA. Subís una imagen, el modelo detecta hasta 18 patologías y te muestra un mapa de calor (Grad-CAM) que resalta qué zona de la radiografía influyó en el diagnóstico.
 
-**Stack:** React + Vite + TypeScript · NestJS · Python + FastAPI + PyTorch
+Proyecto de aprendizaje personal. La idea era construir algo que funcionara de verdad, no un hello world con modelos de juguete.
 
 ---
 
-## Architecture
+## Qué hace
 
-```
-Browser (React)
-    │  multipart/form-data
-    ▼
-NestJS Backend (port 3000)
-    │  JSON + base64
-    ▼
-FastAPI AI Service (port 8000)
-    │  PIL → Tensor [1,3,224,224]
-    ▼
-BioAI CNN (PyTorch)
-    │  softmax
-    ▼
-{ prediction, confidence, class_scores }
-```
+Subís una radiografía de tórax, ingresás un ID de paciente y en unos segundos tenés:
 
-## Project Structure
+- La patología detectada con mayor probabilidad (de una lista de 18)
+- Un porcentaje de confianza para cada patología
+- Un overlay Grad-CAM — la imagen original con un mapa de calor encima que muestra qué zona miró el modelo para llegar a ese diagnóstico
+- El análisis guardado en el historial, asociado a tu usuario
 
-```
-bioai-hub/
-├── apps/
-│   ├── frontend/        # React + Vite + TypeScript + Tailwind
-│   ├── backend/         # NestJS — file handling, validation, HTTP client
-│   └── ai-service/      # FastAPI + PyTorch — model inference
-├── docker-compose.yml
-└── pnpm-workspace.yaml
-```
+## Stack
 
-## Prerequisites
-
-| Tool | Version |
+| Capa | Tecnología |
 |---|---|
-| Node.js | >= 20 |
-| pnpm | >= 9 |
-| Python | >= 3.11 |
-| Kaggle account | Required for training |
+| Frontend | React 18 · Vite · TypeScript · Tailwind CSS |
+| Backend | NestJS · TypeScript · SQLite (TypeORM) |
+| IA | FastAPI · PyTorch · torchxrayvision |
 
-## Setup
+## Cómo funciona por dentro
 
-### 1. Clone the repository
+```
+Navegador
+  └─ POST /api/v1/analysis (multipart/form-data)
+       └─ NestJS: valida MIME, tamaño, JWT · hashea imagen · guarda en SQLite
+            └─ POST /predict-with-cam (imagen en base64)
+                 └─ FastAPI: imagen → DenseNet121 → 18 probabilidades
+                           + Grad-CAM (backward sobre denseblock4) → overlay JPEG
+```
+
+El modelo es DenseNet121 pre-entrenado en el dataset NIH ChestX-ray14 (112k radiografías), servido por [torchxrayvision](https://github.com/mlmed/torchxrayvision). No hay entrenamiento propio — se descarga automáticamente (~85MB) la primera vez que levantás el servicio de IA.
+
+El Grad-CAM hookea el último dense block del modelo. El mapa de calor sale en resolución nativa 7×7 y se escala a 224×224 antes de superponerse sobre la imagen original con un colormap JET.
+
+## Requisitos
+
+- Node.js 20+, pnpm 9+
+- Python 3.11+
+- Docker (opcional, pero más cómodo)
+
+## Instalación
 
 ```bash
 git clone https://github.com/torillotomas/bioai-hub.git
 cd bioai-hub
-```
 
-### 2. Install JS dependencies
-
-```bash
+# JS
 pnpm install
-pnpm approve-builds   # approve @nestjs/core and esbuild
+
+# Python
+cd apps/ai-service && pip install -r requirements.txt
 ```
 
-### 3. Install Python dependencies
+Copiá `.env.example` a `.env` y editá al menos los JWT secrets antes de levantar.
 
+## Levantar
+
+**Con Docker** (recomendado):
 ```bash
-cd apps/ai-service
-pip install -r requirements.txt
+docker compose up
 ```
 
-### 4. Configure Kaggle API
-
-Create `~/.kaggle/kaggle.json`:
-```json
-{"username": "your_username", "key": "your_api_key"}
-```
-
-Get your API key at [kaggle.com](https://www.kaggle.com) → Settings → API → Create New Token.
-
-### 5. Train the model
-
+**Sin Docker** (3 terminales):
 ```bash
-cd apps/ai-service
-python scripts/train.py --samples-per-class 700 --epochs 8
+# IA
+cd apps/ai-service && uvicorn app.main:app --port 8000 --reload
+
+# Backend
+cd apps/backend && pnpm run dev
+
+# Frontend
+cd apps/frontend && pnpm run dev
 ```
 
-Downloads the [Chest X-Ray dataset](https://www.kaggle.com/datasets/paultimothymooney/chest-xray-pneumonia) (~2GB) and saves `models/model.pth`.
+Abrí http://localhost:5173. La primera vez que arranca el servicio de IA descarga el modelo — esperá unos segundos antes de hacer el primer análisis.
 
-Training output example:
-```
-  Epoch [8/8] | Val Acc: 81.2%
-  [checkpoint] Best model saved → models/model.pth
-```
+## API
 
-## Running the services
-
-Open **3 terminals**:
-
-```bash
-# Terminal A — AI Service
-cd apps/ai-service
-uvicorn app.main:app --port 8000 --reload
-```
-
-```bash
-# Terminal B — Backend
-cd apps/backend
-pnpm run dev
-```
-
-```bash
-# Terminal C — Frontend
-cd apps/frontend
-pnpm run dev
-```
-
-Open [http://localhost:5173](http://localhost:5173) in your browser.
-
-## Usage
-
-1. Drag and drop a chest X-ray image (JPEG, PNG or WebP, max 10MB)
-2. Enter a patient ID and select the study type
-3. Click **"Analizar imagen"**
-4. View the diagnosis with confidence score and probability distribution
-
-## API Reference
-
-### `GET /api/v1/health`
-```json
-{ "status": "ok", "service": "bioai-backend", "timestamp": "..." }
-```
+Requiere autenticación JWT. Primero registrarse en `POST /auth/register` y luego `POST /auth/login` para obtener el token.
 
 ### `POST /api/v1/analysis`
+
 ```
+Authorization: Bearer <token>
 Content-Type: multipart/form-data
-file:     <image binary>
+
+file:     <imagen> (JPEG · PNG · WebP · máx 10MB)
 metadata: { "patientId": "PAC-001", "studyType": "chest_xray" }
 ```
 
-Response:
 ```json
 {
   "analysis_id": "uuid",
   "status": "completed",
   "result": {
-    "prediction": "NORMAL",
-    "confidence": 0.91,
-    "class_scores": { "NORMAL": 0.91, "PNEUMONIA": 0.09 },
-    "model_version": "v1.0.0",
-    "inference_time_ms": 80
+    "prediction": "Pneumonia",
+    "confidence": 0.87,
+    "class_scores": {
+      "Pneumonia": 0.87,
+      "Atelectasis": 0.43,
+      "Edema": 0.21
+    },
+    "model_version": "v2.0.0",
+    "inference_time_ms": 380,
+    "heatmap_b64": "<JPEG en base64>"
   },
   "audit": {
-    "processed_at": "2026-05-29T16:00:00.000Z",
+    "processed_at": "2026-06-02T16:00:00.000Z",
     "node_version": "v22.x",
     "image_hash_sha256": "abc123..."
   }
 }
 ```
 
-### Error responses
+### `GET /api/v1/analysis`
 
-| Status | Cause |
+Devuelve los últimos 20 análisis del usuario autenticado, ordenados por fecha.
+
+### Errores
+
+| Código | Cuándo |
 |---|---|
-| 400 | Missing file or invalid metadata |
-| 413 | File exceeds 10MB limit |
-| 415 | Unsupported file type (not JPEG/PNG/WebP) |
-| 503 | AI service unavailable |
+| 401 | Sin token o token vencido |
+| 413 | Imagen mayor a 10MB |
+| 415 | Formato no soportado |
+| 503 | El servicio de IA no está corriendo |
 
-## Model
-
-- **Architecture:** Custom CNN — 3 convolutional blocks + fully connected classifier
-- **Input:** RGB image resized to 224×224
-- **Classes:** NORMAL · PNEUMONIA
-- **Dataset:** [Chest X-Ray Images (Pneumonia)](https://www.kaggle.com/datasets/paultimothymooney/chest-xray-pneumonia) — 5,863 images
-- **Validation accuracy:** ~81%
-
-> **Disclaimer:** This model is built for educational purposes only. It does not replace professional medical diagnosis.
-
-## Running tests
+## Tests
 
 ```bash
-# AI Service
-cd apps/ai-service
-pytest tests/ -v
+# Python — predictor, transforms, health endpoint, Grad-CAM (16 tests)
+cd apps/ai-service && pytest tests/ -v
+
+# Backend — auth service (9 tests unitarios + 8 e2e)
+cd apps/backend && pnpm test
 ```
 
-## Docker (optional)
+Los tests de Python no necesitan el modelo descargado — usan mocks con pesos aleatorios.
 
-```bash
-docker compose up
-```
+## Patologías detectadas
+
+Las 18 clases del dataset NIH ChestX-ray14: Atelectasis, Consolidation, Infiltration, Pneumothorax, Edema, Emphysema, Fibrosis, Effusion, Pneumonia, Pleural Thickening, Cardiomegaly, Nodule, Mass, Hernia, Lung Lesion, Fracture, Lung Opacity, Enlarged Cardiomediastinum.
 
 ---
 
-Built with the [BioAI Hub Implementation Plan](PLAN_IMPLEMENTACION.md) · 4 milestones · 1 day
+> Proyecto educativo. Los resultados del modelo no reemplazan el criterio de un médico.
