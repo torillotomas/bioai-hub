@@ -25,9 +25,16 @@ export function HistoryPanel({ onSelect }: HistoryPanelProps) {
 
       <div className="flex-1 overflow-y-auto p-2">
         {history.length === 0 ? (
-          <p className="text-xs text-warm-faint text-center py-6 px-3">
-            Los análisis aparecerán aquí
-          </p>
+          <div className="flex flex-col items-center gap-2 py-8 px-4 text-center">
+            <svg className="w-8 h-8 text-warm-faint/60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="text-xs text-warm-faint leading-relaxed">
+              Los análisis que realices<br />aparecerán aquí.<br />
+              <span className="text-warm-faint/70">Guarda hasta 20 estudios.</span>
+            </p>
+          </div>
         ) : (
           <div className="space-y-1">
             {history.map((item) => (

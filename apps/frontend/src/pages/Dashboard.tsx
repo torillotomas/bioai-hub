@@ -53,7 +53,7 @@ export function Dashboard() {
             </div>
             <div>
               <h1 className="text-lg font-display font-normal text-warm-text">BioAI Hub</h1>
-              <p className="text-xs text-warm-faint">Medical Image Analysis Platform</p>
+              <p className="hidden sm:block text-xs text-warm-faint">Medical Image Analysis Platform</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -85,7 +85,7 @@ export function Dashboard() {
 
           {status !== "done" && (
             <form onSubmit={handleSubmit} className="bg-white border border-warm-border rounded-2xl shadow-sm p-6 space-y-5">
-              <h2 className="text-lg font-semibold text-warm-text">Nuevo análisis</h2>
+              <h2 className="text-lg font-display font-normal text-warm-text">Nuevo análisis</h2>
 
               {file ? (
                 <FilePreview file={file} onRemove={handleRemove} />
@@ -111,36 +111,48 @@ export function Dashboard() {
                   <label className="block text-sm font-medium text-warm-muted mb-1">
                     Tipo de estudio
                   </label>
-                  <select
-                    value={studyType}
-                    onChange={(e) => setStudyType(e.target.value)}
-                    disabled={isLoading}
-                    className="w-full px-3 py-3 border border-warm-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent disabled:opacity-50 min-h-[44px]"
-                  >
-                    {STUDY_TYPES.map((t) => (
-                      <option key={t.value} value={t.value}>{t.label}</option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <select
+                      value={studyType}
+                      onChange={(e) => setStudyType(e.target.value)}
+                      disabled={isLoading}
+                      className="w-full appearance-none px-3 py-3 pr-9 border border-warm-border rounded-lg text-sm text-warm-text focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent disabled:opacity-50 min-h-[44px] bg-white cursor-pointer"
+                    >
+                      {STUDY_TYPES.map((t) => (
+                        <option key={t.value} value={t.value}>{t.label}</option>
+                      ))}
+                    </select>
+                    <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-warm-muted pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
                 </div>
               </div>
 
-              <button
-                type="submit"
-                disabled={!file || !patientId || isLoading}
-                className="w-full py-3 px-4 bg-brand-600 hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors text-sm min-h-[44px]"
-              >
-                {isLoading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                    </svg>
-                    Analizando...
-                  </span>
-                ) : (
-                  "Analizar imagen"
+              <div className="space-y-1.5">
+                <button
+                  type="submit"
+                  disabled={!file || !patientId || isLoading}
+                  className="w-full py-3 px-4 bg-brand-600 hover:bg-brand-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors text-sm min-h-[44px]"
+                >
+                  {isLoading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                      </svg>
+                      Analizando...
+                    </span>
+                  ) : (
+                    "Analizar imagen"
+                  )}
+                </button>
+                {(!file || !patientId) && !isLoading && (
+                  <p className="text-xs text-warm-faint text-center">
+                    {!file ? "Subí una imagen para continuar" : "Ingresá el ID del paciente"}
+                  </p>
                 )}
-              </button>
+              </div>
             </form>
           )}
         </div>
