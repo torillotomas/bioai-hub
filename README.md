@@ -4,20 +4,20 @@
 [![Frontend](https://github.com/torillotomas/bioai-hub/actions/workflows/frontend.yml/badge.svg)](https://github.com/torillotomas/bioai-hub/actions/workflows/frontend.yml)
 [![Backend](https://github.com/torillotomas/bioai-hub/actions/workflows/backend.yml/badge.svg)](https://github.com/torillotomas/bioai-hub/actions/workflows/backend.yml)
 
-Plataforma para analizar radiografías de tórax con IA. Subís una imagen, el modelo detecta hasta 18 patologías y te muestra un mapa de calor (Grad-CAM) que resalta qué zona de la radiografía influyó en el diagnóstico.
+Plataforma para analizar radiografías de tórax con IA. Subís una imagen, el modelo clasifica la patología y te muestra un mapa de calor (Grad-CAM) que resalta qué zona de la radiografía influyó en el diagnóstico.
 
-Proyecto de aprendizaje personal. La idea era construir algo que funcionara de verdad, no un hello world con modelos de juguete.
+Proyecto personal de aprendizaje. Quería construir algo end-to-end que funcionara de verdad: modelo entrenado sobre datos reales, backend con auth, frontend usable.
 
 ---
 
 ## Qué hace
 
-Subís una radiografía de tórax, ingresás un ID de paciente y en unos segundos tenés:
+Subís una radiografía de tórax y en unos segundos tenés:
 
-- La patología detectada con mayor probabilidad (de una lista de 18)
-- Un porcentaje de confianza para cada patología
-- Un overlay Grad-CAM — la imagen original con un mapa de calor encima que muestra qué zona miró el modelo para llegar a ese diagnóstico
-- El análisis guardado en el historial, asociado a tu usuario
+- Clasificación con probabilidad de confianza
+- Scores por patología
+- Overlay Grad-CAM sobre la imagen original — mapa de calor que muestra qué zona activó el diagnóstico
+- Historial de análisis asociado a tu usuario
 
 ## Stack
 
@@ -32,21 +32,32 @@ Subís una radiografía de tórax, ingresás un ID de paciente y en unos segundo
 ```
 Navegador
   └─ POST /api/v1/analysis (multipart/form-data)
-       └─ NestJS: valida MIME, tamaño, JWT · hashea imagen · guarda en SQLite
+       └─ NestJS: valida MIME + tamaño · JWT · hashea imagen · guarda en SQLite
             └─ POST /predict-with-cam (imagen en base64)
-                 └─ FastAPI: imagen → DenseNet121 → 18 probabilidades
-                           + Grad-CAM (backward sobre denseblock4) → overlay JPEG
+                 └─ FastAPI: imagen → DenseNet121 → probabilidades por patología
+                           + Grad-CAM (backward sobre último dense block) → overlay JPEG
 ```
 
-El modelo es DenseNet121 pre-entrenado en el dataset NIH ChestX-ray14 (112k radiografías), servido por [torchxrayvision](https://github.com/mlmed/torchxrayvision). No hay entrenamiento propio — se descarga automáticamente (~85MB) la primera vez que levantás el servicio de IA.
+El modelo es DenseNet121 pre-entrenado en NIH ChestX-ray14 (112k radiografías), cargado desde [torchxrayvision](https://github.com/mlmed/torchxrayvision). Se descarga automáticamente (~85MB) la primera vez que levantás el servicio de IA.
 
-El Grad-CAM hookea el último dense block del modelo. El mapa de calor sale en resolución nativa 7×7 y se escala a 224×224 antes de superponerse sobre la imagen original con un colormap JET.
+El Grad-CAM hookea el último dense block. El mapa de calor sale en resolución 7×7 y se escala a 224×224 antes de superponerse sobre la imagen con colormap JET.
+
+## Notebooks de entrenamiento
+
+Además de la app, hay un conjunto de notebooks en `colab/` donde entreno modelos desde cero para entender el pipeline completo de ML médico.
+
+| Notebook | Contenido |
+|---|---|
+| `layer1_primeros_pasos.ipynb` | Setup de entorno en Google Colab, GPU, Google Drive |
+| `layer2_primera_cnn.ipynb` | Dataset Chest X-Ray Kaggle, BioAICNN desde cero, entrenamiento, evaluación |
+
+El plan es escalar a NIH ChestX-ray14 (14 patologías, 112k imágenes) con transfer learning sobre EfficientNet y GradCAM dentro del mismo notebook.
 
 ## Requisitos
 
 - Node.js 20+, pnpm 9+
 - Python 3.11+
-- Docker (opcional, pero más cómodo)
+- Docker (opcional)
 
 ## Instalación
 
@@ -61,32 +72,27 @@ pnpm install
 cd apps/ai-service && pip install -r requirements.txt
 ```
 
-Copiá `.env.example` a `.env` y editá al menos los JWT secrets antes de levantar.
+Copiá `.env.example` a `.env` y completá los JWT secrets antes de levantar.
 
 ## Levantar
 
-**Con Docker** (recomendado):
+**Con Docker:**
 ```bash
 docker compose up
 ```
 
-**Sin Docker** (3 terminales):
+**Sin Docker (3 terminales):**
 ```bash
-# IA
 cd apps/ai-service && uvicorn app.main:app --port 8000 --reload
-
-# Backend
 cd apps/backend && pnpm run dev
-
-# Frontend
 cd apps/frontend && pnpm run dev
 ```
 
-Abrí http://localhost:5173. La primera vez que arranca el servicio de IA descarga el modelo — esperá unos segundos antes de hacer el primer análisis.
+Abrí http://localhost:5173. La primera vez que arranca el servicio de IA descarga el modelo, esperá unos segundos antes del primer análisis.
 
 ## API
 
-Requiere autenticación JWT. Primero registrarse en `POST /auth/register` y luego `POST /auth/login` para obtener el token.
+Requiere JWT. Registrarse en `POST /auth/register` y obtener token en `POST /auth/login`.
 
 ### `POST /api/v1/analysis`
 
@@ -105,11 +111,7 @@ metadata: { "patientId": "PAC-001", "studyType": "chest_xray" }
   "result": {
     "prediction": "Pneumonia",
     "confidence": 0.87,
-    "class_scores": {
-      "Pneumonia": 0.87,
-      "Atelectasis": 0.43,
-      "Edema": 0.21
-    },
+    "class_scores": { "Pneumonia": 0.87, "Atelectasis": 0.43 },
     "model_version": "v2.0.0",
     "inference_time_ms": 380,
     "heatmap_b64": "<JPEG en base64>"
@@ -124,7 +126,7 @@ metadata: { "patientId": "PAC-001", "studyType": "chest_xray" }
 
 ### `GET /api/v1/analysis`
 
-Devuelve los últimos 20 análisis del usuario autenticado, ordenados por fecha.
+Últimos 20 análisis del usuario autenticado, ordenados por fecha.
 
 ### Errores
 
@@ -138,19 +140,15 @@ Devuelve los últimos 20 análisis del usuario autenticado, ordenados por fecha.
 ## Tests
 
 ```bash
-# Python — predictor, transforms, health endpoint, Grad-CAM (16 tests)
+# Python — predictor, transforms, health, Grad-CAM
 cd apps/ai-service && pytest tests/ -v
 
-# Backend — auth service (9 tests unitarios + 8 e2e)
+# Backend — auth + analysis
 cd apps/backend && pnpm test
 ```
 
-Los tests de Python no necesitan el modelo descargado — usan mocks con pesos aleatorios.
-
-## Patologías detectadas
-
-Las 18 clases del dataset NIH ChestX-ray14: Atelectasis, Consolidation, Infiltration, Pneumothorax, Edema, Emphysema, Fibrosis, Effusion, Pneumonia, Pleural Thickening, Cardiomegaly, Nodule, Mass, Hernia, Lung Lesion, Fracture, Lung Opacity, Enlarged Cardiomediastinum.
+Los tests de Python no necesitan el modelo descargado, usan pesos aleatorios.
 
 ---
 
-> Proyecto educativo. Los resultados del modelo no reemplazan el criterio de un médico.
+> Proyecto educativo. Los resultados no reemplazan el criterio de un médico.

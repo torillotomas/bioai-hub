@@ -43,10 +43,15 @@ Thumbs.db
 *.log
 logs/
 
+# Jupyter / Colab
+.ipynb_checkpoints/
+kaggle.json
+
 # Claude Code
 CLAUDE.md
 CONTEXTO_SESION.md
 GSTACK_GUIDE.md
+COLAB_PLAN.md
 
 # NestJS
 apps/backend/dist/
