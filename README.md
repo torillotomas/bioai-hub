@@ -44,14 +44,24 @@ El Grad-CAM hookea el último dense block. El mapa de calor sale en resolución 
 
 ## Notebooks de entrenamiento
 
-Además de la app, hay un conjunto de notebooks en `colab/` donde entreno modelos desde cero para entender el pipeline completo de ML médico.
+Además de la app, tengo una serie de notebooks donde fui construyendo el pipeline de ML médico desde cero. Los separé en dos etapas:
+
+**`notebooks/colab/` — progresión desde cero**
 
 | Notebook | Contenido |
 |---|---|
-| `layer1_primeros_pasos.ipynb` | Setup de entorno en Google Colab, GPU, Google Drive |
-| `layer2_primera_cnn.ipynb` | Dataset Chest X-Ray Kaggle, BioAICNN desde cero, entrenamiento, evaluación |
+| `layer1_primeros_pasos.ipynb` | Entorno, GPU, primeros pasos con PyTorch |
+| `layer2_primera_cnn.ipynb` | BioAICNN desde cero sobre Chest X-Ray Kaggle · AUC 0.94 en clasificación binaria |
+| `layer3_metricas_y_mejoras.ipynb` | Métricas, augmentation, regularización |
+| `layer4_nih_dataset.ipynb` | Pipeline multi-label sobre NIH ChestX-ray14 · 14 patologías · 112k imágenes |
 
-El plan es escalar a NIH ChestX-ray14 (14 patologías, 112k imágenes) con transfer learning sobre EfficientNet y GradCAM dentro del mismo notebook.
+**`notebooks/transfer_learning/` — fine-tuning con EfficientNet-B3**
+
+| Notebook | Contenido |
+|---|---|
+| `efficientnet_nih.ipynb` | Fine-tuning de EfficientNet-B3 (ImageNet) sobre NIH ChestX-ray14 · entrenamiento en dos fases (backbone congelado → descongelado) · AUC-ROC promedio 0.785 |
+
+El entrenamiento del EfficientNet lo corrí localmente sobre una RTX 3070. Fase 1 (3 epochs, solo clasificador): AUC 0.716. Fase 2 (5 epochs, backbone completo): AUC 0.785. Los papers de referencia (CheXNet, DenseNet121) reportan 0.84 con mucho más tiempo de entrenamiento.
 
 ## Requisitos
 
