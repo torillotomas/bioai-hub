@@ -42,11 +42,10 @@ services:
       - "8000:8000"
     environment:
       - AI_SERVICE_PORT=8000
-      - MODEL_PATH=/models/efficientnet_b3_nih_final.pth
+      - MODEL_PATH=./models/efficientnet_b3_nih_final.pth
       - MODEL_VERSION=v3.0.0
     volumes:
       - ./apps/ai-service:/app
-      - C:/nih_training:/models:ro
 
 networks:
   default:
