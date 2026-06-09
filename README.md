@@ -59,9 +59,11 @@ Además de la app, tengo una serie de notebooks donde fui construyendo el pipeli
 
 | Notebook | Contenido |
 |---|---|
-| `efficientnet_nih.ipynb` | Fine-tuning de EfficientNet-B3 (ImageNet) sobre NIH ChestX-ray14 · entrenamiento en dos fases (backbone congelado → descongelado) · AUC-ROC promedio 0.785 |
+| `efficientnet_nih.ipynb` | Fine-tuning de EfficientNet-B3 (ImageNet) sobre NIH ChestX-ray14 · dos fases (backbone congelado → descongelado) · AUC-ROC 0.785 en test · Grad-CAM sobre las 14 patologías |
 
-El entrenamiento del EfficientNet lo corrí localmente sobre una RTX 3070. Fase 1 (3 epochs, solo clasificador): AUC 0.716. Fase 2 (5 epochs, backbone completo): AUC 0.785. Los papers de referencia (CheXNet, DenseNet121) reportan 0.84 con mucho más tiempo de entrenamiento.
+El entrenamiento lo corrí localmente sobre una RTX 3070. Fase 1 (3 epochs, solo clasificador): AUC val 0.711. Fase 2 (5 epochs, backbone completo): AUC val 0.820 / AUC test 0.785. Los papers de referencia (CheXNet, DenseNet121) reportan 0.84 con arquitecturas más grandes y más tiempo de entrenamiento.
+
+El notebook incluye Grad-CAM sobre el último bloque convolucional (`model.features[-1]`, resolución 7×7×1536). Muestras en [`gradcam_samples/`](notebooks/transfer_learning/gradcam_samples/).
 
 ## Requisitos
 
