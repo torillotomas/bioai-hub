@@ -3,24 +3,24 @@ import base64
 import cv2
 import numpy as np
 import torch
+import torch.nn as nn
 import torch.nn.functional as F
-import torchxrayvision as xrv
 from PIL import Image
 
 
 class GradCAM:
     """
-    Grad-CAM sobre denseblock4 de DenseNet121 (torchxrayvision).
-    Hookea model.features.denseblock4 — feature maps [1, 1024, 7×7] para input 224×224.
+    Grad-CAM sobre el último bloque convolucional de EfficientNet-B3.
+    Hookea model.features[-1] — feature maps [1, 1536, 7×7] para input 224×224.
     """
 
-    def __init__(self, model: xrv.models.DenseNet):
+    def __init__(self, model: nn.Module):
         self._model = model
         self._activations: torch.Tensor | None = None
         self._gradients: torch.Tensor | None = None
 
-        model.features.denseblock4.register_forward_hook(self._fwd_hook)
-        model.features.denseblock4.register_full_backward_hook(self._bwd_hook)
+        model.features[-1].register_forward_hook(self._fwd_hook)
+        model.features[-1].register_full_backward_hook(self._bwd_hook)
 
     def _fwd_hook(self, module, input, output):  # noqa: A002
         self._activations = output.detach()
@@ -36,7 +36,7 @@ class GradCAM:
     ) -> str:
         """
         Devuelve la imagen original superpuesta con el heatmap, codificada en base64 JPEG.
-        tensor: [1, 1, 224, 224] — mismo formato que la inferencia normal.
+        tensor: [1, 3, 224, 224] — mismo formato que la inferencia normal.
         """
         pathologies = list(self._model.pathologies)
         class_idx = pathologies.index(pathology_name) if pathology_name in pathologies else 0
@@ -45,9 +45,9 @@ class GradCAM:
         self._gradients = None
         self._model.eval()
 
-        output = self._model(tensor)           # forward → dispara fwd hook
+        logits = self._model(tensor)                               # forward → dispara fwd hook
         self._model.zero_grad()
-        output[0, class_idx].backward()        # backward → dispara bwd hook
+        torch.sigmoid(logits)[0, class_idx].backward()            # backward → dispara bwd hook
 
         assert self._activations is not None and self._gradients is not None
 

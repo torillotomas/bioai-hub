@@ -2,9 +2,8 @@ import base64
 import time
 from io import BytesIO
 
-import numpy as np
 import torch
-import torchxrayvision as xrv
+import torch.nn as nn
 from PIL import Image, UnidentifiedImageError
 
 from app.model.transforms import inference_transforms
@@ -12,7 +11,7 @@ from app.schemas import PredictRequest, PredictResponse
 
 
 class Predictor:
-    def __init__(self, model: xrv.models.DenseNet):
+    def __init__(self, model: nn.Module):
         self._model = model
 
     def predict(self, payload: PredictRequest) -> PredictResponse:
@@ -28,7 +27,7 @@ class Predictor:
             prediction=prediction,
             confidence=round(confidence, 4),
             class_scores={k: round(v, 4) for k, v in class_scores.items()},
-            model_version="v2.0.0",
+            model_version="v3.0.0",
             inference_time_ms=elapsed_ms,
         )
 
@@ -47,15 +46,11 @@ class Predictor:
 
     def _infer(self, tensor: torch.Tensor) -> tuple[dict[str, float], str, float]:
         with torch.no_grad():
-            output = self._model(tensor)   # [1, num_pathologies]
-            probs = output[0]              # [num_pathologies]
+            logits = self._model(tensor)           # [1, num_pathologies]
+            probs = torch.sigmoid(logits)[0]       # [num_pathologies]
 
         pathologies = self._model.pathologies
-        scores = {
-            pathologies[i]: probs[i].item()
-            for i in range(len(pathologies))
-            if not np.isnan(probs[i].item())
-        }
+        scores = {pathologies[i]: probs[i].item() for i in range(len(pathologies))}
         prediction = max(scores, key=lambda k: scores[k])
         confidence = scores[prediction]
 

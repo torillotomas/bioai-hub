@@ -5,7 +5,7 @@ from app.model.transforms import inference_transforms
 def test_output_shape():
     img = Image.new("RGB", (512, 400))
     tensor = inference_transforms(img)
-    assert tensor.shape == (1, 1, 224, 224), f"Shape inesperado: {tensor.shape}"
+    assert tensor.shape == (1, 3, 224, 224), f"Shape inesperado: {tensor.shape}"
 
 
 def test_output_dtype():

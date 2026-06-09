@@ -24,7 +24,7 @@ async def lifespan(app: FastAPI):
     model = load_model()
     _predictor = Predictor(model)
     _gradcam = GradCAM(model)
-    print(f"[startup] Modelo torchxrayvision cargado — {len(model.pathologies)} patologías")
+    print(f"[startup] EfficientNet-B3 cargado — {len(model.pathologies)} patologías")
     yield
     _predictor = None
     _gradcam = None

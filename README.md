@@ -48,7 +48,7 @@ Subís una radiografía de tórax y en unos segundos tenés:
 |---|---|
 | Frontend | React 18 · Vite · TypeScript · Tailwind CSS |
 | Backend | NestJS · TypeScript · SQLite (TypeORM) |
-| IA | FastAPI · PyTorch · torchxrayvision |
+| IA | FastAPI · PyTorch · EfficientNet-B3 (NIH ChestX-ray14) |
 
 ## Cómo funciona por dentro
 
@@ -57,13 +57,13 @@ Navegador
   └─ POST /api/v1/analysis (multipart/form-data)
        └─ NestJS: valida MIME + tamaño · JWT · hashea imagen · guarda en SQLite
             └─ POST /predict-with-cam (imagen en base64)
-                 └─ FastAPI: imagen → DenseNet121 → probabilidades por patología
-                           + Grad-CAM (backward sobre último dense block) → overlay JPEG
+                 └─ FastAPI: imagen → EfficientNet-B3 → probabilidades por patología
+                           + Grad-CAM (backward sobre último bloque convolucional) → overlay JPEG
 ```
 
-El modelo es DenseNet121 pre-entrenado en NIH ChestX-ray14 (112k radiografías), cargado desde [torchxrayvision](https://github.com/mlmed/torchxrayvision). Se descarga automáticamente (~85MB) la primera vez que levantás el servicio de IA.
+El modelo es EfficientNet-B3 fine-tuned sobre NIH ChestX-ray14 (112k radiografías, 14 patologías). AUC-ROC 0.785 en test set. El modelo se carga desde disco (`MODEL_PATH` en `.env`).
 
-El Grad-CAM hookea el último dense block. El mapa de calor sale en resolución 7×7 y se escala a 224×224 antes de superponerse sobre la imagen con colormap JET.
+El Grad-CAM hookea `model.features[-1]`. El mapa de calor sale en resolución 7×7 y se escala a 224×224 antes de superponerse sobre la imagen con colormap JET.
 
 ## Notebooks de entrenamiento
 
@@ -147,7 +147,7 @@ metadata: { "patientId": "PAC-001", "studyType": "chest_xray" }
     "prediction": "Pneumonia",
     "confidence": 0.87,
     "class_scores": { "Pneumonia": 0.87, "Atelectasis": 0.43 },
-    "model_version": "v2.0.0",
+    "model_version": "v3.0.0",
     "inference_time_ms": 380,
     "heatmap_b64": "<JPEG en base64>"
   },

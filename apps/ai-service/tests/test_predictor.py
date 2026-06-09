@@ -8,24 +8,26 @@ from PIL import Image
 from app.schemas import PredictRequest, ImageMetadata
 from app.services.predictor import Predictor
 
+PATOLOGIAS = [
+    "Atelectasis", "Consolidation", "Infiltration", "Pneumothorax",
+    "Edema", "Emphysema", "Fibrosis", "Effusion", "Pneumonia",
+    "Pleural_Thickening", "Cardiomegaly", "Nodule", "Mass", "Hernia",
+]
 
-class _MockXRVModel:
-    pathologies = [
-        "Atelectasis", "Consolidation", "Infiltration", "Pneumothorax",
-        "Edema", "Emphysema", "Fibrosis", "Effusion", "Pneumonia",
-        "Pleural_Thickening", "Cardiomegaly", "Nodule", "Mass", "Hernia",
-        "Lung Lesion", "Fracture", "Lung Opacity", "Enlarged Cardiomediastinum",
-    ]
+
+class _MockEfficientNet:
+    pathologies = PATOLOGIAS
 
     def __call__(self, tensor):
-        return torch.rand(1, len(self.pathologies))
+        # Retorna logits crudos; el Predictor aplica sigmoid
+        return torch.randn(1, len(self.pathologies))
 
     def eval(self):
         return self
 
 
 def _make_predictor() -> Predictor:
-    return Predictor(_MockXRVModel())
+    return Predictor(_MockEfficientNet())
 
 
 def _image_b64(color: tuple = (128, 128, 128), size: tuple = (224, 224)) -> str:
@@ -51,7 +53,7 @@ def test_confidence_in_range():
 def test_prediction_is_known_class():
     predictor = _make_predictor()
     response = predictor.predict(_make_payload(_image_b64()))
-    assert response.prediction in _MockXRVModel.pathologies, (
+    assert response.prediction in PATOLOGIAS, (
         f"'{response.prediction}' no está en las patologías conocidas"
     )
 
@@ -59,7 +61,7 @@ def test_prediction_is_known_class():
 def test_class_scores_keys_match_pathologies():
     predictor = _make_predictor()
     response = predictor.predict(_make_payload(_image_b64()))
-    assert set(response.class_scores.keys()) == set(_MockXRVModel.pathologies)
+    assert set(response.class_scores.keys()) == set(PATOLOGIAS)
 
 
 def test_inference_time_positive():
@@ -80,4 +82,4 @@ def test_different_image_sizes_handled():
     predictor = _make_predictor()
     for size in [(64, 64), (512, 300), (1024, 768)]:
         response = predictor.predict(_make_payload(_image_b64(size=size)))
-        assert response.prediction in _MockXRVModel.pathologies
+        assert response.prediction in PATOLOGIAS

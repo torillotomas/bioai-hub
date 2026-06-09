@@ -1,12 +1,13 @@
-import numpy as np
 import torch
-import torchxrayvision as xrv
+from torchvision import transforms
+from PIL import Image
+
+_transform = transforms.Compose([
+    transforms.Resize((224, 224)),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+])
 
 
-def inference_transforms(image) -> torch.Tensor:
-    img_array = np.array(image.convert("L"), dtype=np.float32)
-    img_array = xrv.datasets.normalize(img_array, 255)
-    img_array = img_array[np.newaxis, :, :]
-    transform = xrv.datasets.XRayResizer(224)
-    img_array = transform(img_array)
-    return torch.from_numpy(img_array).unsqueeze(0)
+def inference_transforms(image: Image.Image) -> torch.Tensor:
+    return _transform(image.convert("RGB")).unsqueeze(0)

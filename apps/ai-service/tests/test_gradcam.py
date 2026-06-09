@@ -8,49 +8,34 @@ from PIL import Image
 from app.services.gradcam import GradCAM
 
 
-class _DenseBlock(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.conv = nn.Conv2d(1, 32, 3, padding=1)
-
-    def forward(self, x):
-        return self.conv(x)
-
-
-class _Features(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.denseblock4 = _DenseBlock()
-
-    def forward(self, x):
-        return self.denseblock4(x)
-
-
-class _MockDenseNet(nn.Module):
+class _MockEfficientNet(nn.Module):
     pathologies = ["Pneumonia", "Atelectasis"]
 
     def __init__(self):
         super().__init__()
-        self.features = _Features()
+        # features[-1] debe ser indexable como nn.Sequential
+        self.features = nn.Sequential(
+            nn.Conv2d(3, 1536, 3, padding=1),
+        )
         self.pool = nn.AdaptiveAvgPool2d(1)
-        self.head = nn.Linear(32, len(self.pathologies))
+        self.head = nn.Linear(1536, len(self.pathologies))
 
     def forward(self, x):
-        feat = self.features(x)                    # [1, 32, H, W]
-        pooled = self.pool(feat)                   # [1, 32, 1, 1]
-        flat = pooled.view(x.shape[0], -1)         # [1, 32]
-        return torch.sigmoid(self.head(flat))       # [1, 2]
+        feat = self.features(x)                    # [1, 1536, H, W]
+        pooled = self.pool(feat)                   # [1, 1536, 1, 1]
+        flat = pooled.view(x.shape[0], -1)         # [1, 1536]
+        return self.head(flat)                     # logits [1, 2]
 
     def eval(self):
         return self
 
 
 def _make_gradcam() -> GradCAM:
-    return GradCAM(_MockDenseNet())
+    return GradCAM(_MockEfficientNet())
 
 
 def _make_tensor() -> torch.Tensor:
-    return torch.rand(1, 1, 224, 224)
+    return torch.rand(1, 3, 224, 224)
 
 
 def _make_image() -> Image.Image:
