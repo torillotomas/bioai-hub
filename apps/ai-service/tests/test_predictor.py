@@ -53,8 +53,9 @@ def test_confidence_in_range():
 def test_prediction_is_known_class():
     predictor = _make_predictor()
     response = predictor.predict(_make_payload(_image_b64()))
-    assert response.prediction in PATOLOGIAS, (
-        f"'{response.prediction}' no está en las patologías conocidas"
+    valid = set(PATOLOGIAS) | {"No Finding"}
+    assert response.prediction in valid, (
+        f"'{response.prediction}' no está en las clases válidas"
     )
 
 
@@ -80,6 +81,7 @@ def test_pdf_bytes_raise_value_error():
 
 def test_different_image_sizes_handled():
     predictor = _make_predictor()
+    valid = set(PATOLOGIAS) | {"No Finding"}
     for size in [(64, 64), (512, 300), (1024, 768)]:
         response = predictor.predict(_make_payload(_image_b64(size=size)))
-        assert response.prediction in PATOLOGIAS
+        assert response.prediction in valid

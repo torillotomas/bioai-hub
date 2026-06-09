@@ -44,6 +44,10 @@ class Predictor:
             raise ValueError(f"No se pudo decodificar la imagen: {exc}")
         return image
 
+    # Umbral mínimo para considerar una patología presente.
+    # Por debajo de este valor se reporta "No Finding".
+    CONFIDENCE_THRESHOLD = 0.3
+
     def _infer(self, tensor: torch.Tensor) -> tuple[dict[str, float], str, float]:
         with torch.no_grad():
             logits = self._model(tensor)           # [1, num_pathologies]
@@ -51,7 +55,10 @@ class Predictor:
 
         pathologies = self._model.pathologies
         scores = {pathologies[i]: probs[i].item() for i in range(len(pathologies))}
-        prediction = max(scores, key=lambda k: scores[k])
-        confidence = scores[prediction]
+        top_class = max(scores, key=lambda k: scores[k])
+        top_score = scores[top_class]
 
-        return scores, prediction, confidence
+        if top_score < self.CONFIDENCE_THRESHOLD:
+            return scores, "No Finding", top_score
+
+        return scores, top_class, top_score
