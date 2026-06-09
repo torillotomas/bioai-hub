@@ -16,60 +16,73 @@ export function DropZone({ onFile, disabled }: DropZoneProps) {
     onDropAccepted: ([file]) => onFile(file),
   });
 
-  const borderColor = isDragReject
-    ? "border-red-400 bg-red-50"
+  const borderClass = isDragReject
+    ? "border-red-500/50 bg-red-500/5"
     : isDragActive
-    ? "border-brand-500 bg-brand-50"
-    : "border-warm-border bg-white hover:border-brand-400 hover:bg-warm-surface2";
+    ? "border-emerald-500/50 bg-emerald-500/5"
+    : "border-zinc-700 hover:border-zinc-600 bg-transparent hover:bg-zinc-900/30";
 
   return (
     <div
       {...getRootProps()}
-      className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-all duration-200 ${borderColor} ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
+      className={`relative border border-dashed rounded-xl p-5 text-center cursor-pointer transition-all duration-200 overflow-hidden ${borderClass} ${disabled ? "opacity-40 cursor-not-allowed" : ""}`}
     >
       <input {...getInputProps()} />
 
-      <div className="flex flex-col items-center gap-3">
-        {/* Ícono de radiografía / scan médico */}
-        <svg
-          className={`w-14 h-14 transition-colors ${isDragActive ? "text-brand-500" : isDragReject ? "text-red-400" : "text-warm-faint"}`}
-          viewBox="0 0 56 56"
-          fill="none"
-          stroke="currentColor"
-        >
-          {/* Marco de film radiográfico */}
-          <rect x="10" y="4" width="36" height="48" rx="3" strokeWidth="1.5" />
-          {/* Marcadores de esquina superiores */}
-          <rect x="10" y="4" width="6" height="6" rx="1" strokeWidth="1.2" fill="currentColor" fillOpacity="0.15" />
-          <rect x="40" y="4" width="6" height="6" rx="1" strokeWidth="1.2" fill="currentColor" fillOpacity="0.15" />
-          {/* Marcadores de esquina inferiores */}
-          <rect x="10" y="46" width="6" height="6" rx="1" strokeWidth="1.2" fill="currentColor" fillOpacity="0.15" />
-          <rect x="40" y="46" width="6" height="6" rx="1" strokeWidth="1.2" fill="currentColor" fillOpacity="0.15" />
-          {/* Silueta de tórax */}
-          <path
-            d="M22 16 C19 16 16 18.5 16 22 L16 34 C16 37.5 18 39.5 21 40.5 C21 40.5 22 41.5 28 41.5 C34 41.5 35 40.5 35 40.5 C38 39.5 40 37.5 40 34 L40 22 C40 18.5 37 16 34 16 Z"
-            strokeWidth="1.4"
-          />
-          {/* Líneas de costillas */}
-          <path d="M21 23 C23 22 25 22 28 22" strokeWidth="1" strokeOpacity="0.5" />
-          <path d="M35 23 C33 22 31 22 28 22" strokeWidth="1" strokeOpacity="0.5" />
-          <path d="M20 27 C22 26 25 26 28 26" strokeWidth="1" strokeOpacity="0.5" />
-          <path d="M36 27 C34 26 31 26 28 26" strokeWidth="1" strokeOpacity="0.5" />
-          <path d="M20 31 C22 30 25 30 28 30" strokeWidth="1" strokeOpacity="0.5" />
-          <path d="M36 31 C34 30 31 30 28 30" strokeWidth="1" strokeOpacity="0.5" />
-        </svg>
+      {/* Scanner line — active on drag */}
+      {isDragActive && !isDragReject && (
+        <span
+          className="animate-scan pointer-events-none absolute left-0 right-0 h-px bg-emerald-400/50"
+          style={{ boxShadow: "0 0 8px 2px rgba(0,245,160,0.18)" }}
+        />
+      )}
 
+      <div className="flex flex-col items-center gap-2.5 relative">
+
+        {/* Icon container */}
+        <div className={`w-9 h-9 rounded-lg border flex items-center justify-center transition-colors ${
+          isDragReject
+            ? "border-red-500/40 bg-red-500/10"
+            : isDragActive
+            ? "border-emerald-500/40 bg-emerald-500/10"
+            : "border-zinc-800 bg-zinc-900"
+        }`}>
+          {isDragReject ? (
+            <svg className="w-4 h-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          ) : (
+            <svg
+              className={`w-4 h-4 ${isDragActive ? "text-emerald-400" : "text-cyan-600"}`}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+              <polyline points="17 8 12 3 7 8" />
+              <line x1="12" y1="3" x2="12" y2="15" />
+            </svg>
+          )}
+        </div>
+
+        {/* Text */}
         {isDragReject ? (
-          <p className="text-red-600 font-medium text-sm">Solo se aceptan imágenes (JPEG, PNG, WebP)</p>
+          <p className="text-red-400 font-mono text-xs">Solo JPEG · PNG · WebP</p>
         ) : isDragActive ? (
-          <p className="text-brand-600 font-medium text-sm">Soltá la radiografía aquí...</p>
+          <p className="text-emerald-400 font-mono text-xs tracking-wide">Soltá la imagen...</p>
         ) : (
           <>
-            <p className="text-warm-muted font-medium text-sm">
-              Arrastrá una radiografía o{" "}
-              <span className="text-brand-600 underline underline-offset-2">seleccioná un archivo</span>
+            <p className="text-zinc-500 text-xs leading-relaxed">
+              Arrastrá o{" "}
+              <span className="text-emerald-500 underline underline-offset-2 decoration-emerald-500/40">
+                seleccioná
+              </span>
+              {" "}una radiografía
             </p>
-            <p className="text-warm-faint text-xs">JPEG, PNG o WebP · Máx. 10MB</p>
+            <p className="text-zinc-700 text-[10px] font-mono">JPEG · PNG · WebP · 10 MB máx.</p>
           </>
         )}
       </div>

@@ -6,11 +6,11 @@ import axios from "axios";
 export function Register() {
   const { register } = useAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [confirm, setConfirm]   = useState("");
+  const [error, setError]       = useState<string | null>(null);
+  const [loading, setLoading]   = useState(false);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -36,95 +36,110 @@ export function Register() {
   }
 
   return (
-    <div className="min-h-screen flex">
-      {/* Panel izquierdo — branding, oculto en mobile */}
-      <div className="hidden lg:flex w-1/2 bg-[#071f14] flex-col justify-between p-12 relative overflow-hidden">
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{ backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)", backgroundSize: "28px 28px" }}
-        />
-        <div className="relative flex items-center gap-3">
-          <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
-            <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+    <div className="min-h-[100dvh] bg-zinc-950 flex items-center justify-center px-4 relative overflow-hidden">
+
+      {/* Radial glow — surgical emerald from center */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 65% 55% at 50% 42%, rgba(0,245,160,0.055) 0%, transparent 68%)",
+        }}
+      />
+
+      {/* Lab grid texture */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.022]"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)",
+          backgroundSize: "44px 44px",
+        }}
+      />
+
+      {/* Content */}
+      <div className="relative w-full max-w-[360px] animate-fade-in">
+
+        {/* Logo */}
+        <div className="flex items-center justify-center gap-2.5 mb-8">
+          <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center shrink-0">
+            <svg
+              className="w-[15px] h-[15px] text-emerald-400"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M2 12h4l2.5-7 3 14 2.5-7H22" />
             </svg>
           </div>
-          <span className="text-xl font-display text-white">BioAI Hub</span>
+          <span className="text-[15px] font-mono font-medium text-zinc-100 tracking-tight">
+            BioAI Hub
+          </span>
         </div>
 
-        <div className="relative space-y-8">
-          <div>
-            <h2 className="text-4xl font-display text-white leading-snug">
-              Diagnóstico asistido<br />por inteligencia<br />artificial
-            </h2>
-            <p className="mt-5 text-[#6db891] text-base leading-relaxed">
-              Análisis de radiografías de tórax con DenseNet121
-              entrenado sobre NIH ChestX-ray14. Incluye Grad-CAM
-              para visualizar qué zona activó el diagnóstico.
-            </p>
-          </div>
-          <div className="flex items-center gap-8">
-            <div>
-              <p className="text-2xl font-semibold text-white">14</p>
-              <p className="text-xs text-[#6db891] mt-0.5">patologías</p>
-            </div>
-            <div className="w-px h-8 bg-white/10" />
-            <div>
-              <p className="text-2xl font-semibold text-white">112k</p>
-              <p className="text-xs text-[#6db891] mt-0.5">radiografías</p>
-            </div>
-            <div className="w-px h-8 bg-white/10" />
-            <div>
-              <p className="text-2xl font-semibold text-white">Grad-CAM</p>
-              <p className="text-xs text-[#6db891] mt-0.5">explicabilidad</p>
-            </div>
-          </div>
-        </div>
+        {/* Card */}
+        <div className="relative bg-zinc-900/50 border border-zinc-800 rounded-xl backdrop-blur-lg shadow-2xl shadow-black/60 overflow-hidden">
 
-        <p className="relative text-xs text-[#3a6b4a]">
-          Proyecto educativo. Los resultados no reemplazan el criterio médico.
-        </p>
-      </div>
+          {/* Top accent line */}
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/35 to-transparent" />
 
-      {/* Panel derecho — formulario */}
-      <div className="flex-1 flex items-center justify-center px-4 bg-warm-bg">
-        <div className="w-full max-w-sm">
-          <div className="flex items-center gap-3 mb-8 justify-center lg:hidden">
-            <div className="w-9 h-9 bg-brand-600 rounded-lg flex items-center justify-center">
-              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
+          <div className="px-7 pt-7 pb-8">
+
+            {/* Header */}
+            <div className="mb-6">
+              <div className="flex items-center gap-1.5 mb-2.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse-dot" />
+                <span className="text-[10px] font-mono uppercase tracking-[0.12em] text-zinc-600">
+                  Nuevo acceso
+                </span>
+              </div>
+              <h1 className="text-[15px] font-semibold text-zinc-100 leading-snug">Crear cuenta</h1>
+              <p className="text-[11px] font-mono text-zinc-600 mt-1">Acceso al sistema de análisis médico</p>
             </div>
-            <span className="text-xl font-display font-normal text-warm-text">BioAI Hub</span>
-          </div>
 
-          <div className="bg-white border border-warm-border rounded-2xl shadow-sm p-8">
-            <h1 className="text-xl font-semibold text-warm-text mb-6">Crear cuenta</h1>
-
+            {/* Error banner */}
             {error && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
-                {error}
+              <div className="mb-5 flex items-start gap-2 px-3 py-2.5 bg-red-500/8 border border-red-500/20 rounded-lg">
+                <svg
+                  className="w-3.5 h-3.5 text-red-400 shrink-0 mt-px"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.8}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round"
+                    d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                </svg>
+                <span className="text-[11px] font-mono text-red-400 leading-relaxed">{error}</span>
               </div>
             )}
 
+            {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-warm-muted mb-1">Email</label>
+
+              <div className="space-y-1.5">
+                <label className="block text-[10px] font-mono font-medium text-zinc-500 tracking-[0.1em] uppercase">
+                  Email
+                </label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   disabled={loading}
-                  className="w-full px-3 py-3 border border-warm-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent disabled:opacity-50 min-h-[44px]"
+                  autoComplete="email"
                   placeholder="medico@hospital.com"
+                  className="w-full px-3 py-2.5 bg-zinc-950/60 border border-zinc-800 rounded-lg text-sm text-zinc-100 placeholder-zinc-700 focus:outline-none focus:border-emerald-500/60 focus:shadow-[0_0_15px_rgba(0,245,160,0.10)] disabled:opacity-40 transition-all duration-200"
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-warm-muted mb-1">Contraseña</label>
+              <div className="space-y-1.5">
+                <label className="block text-[10px] font-mono font-medium text-zinc-500 tracking-[0.1em] uppercase">
+                  Contraseña
+                </label>
                 <input
                   type="password"
                   value={password}
@@ -132,41 +147,62 @@ export function Register() {
                   required
                   minLength={8}
                   disabled={loading}
-                  className="w-full px-3 py-3 border border-warm-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent disabled:opacity-50 min-h-[44px]"
-                  placeholder="Mínimo 8 caracteres"
+                  autoComplete="new-password"
+                  placeholder="Mín. 8 caracteres"
+                  className="w-full px-3 py-2.5 bg-zinc-950/60 border border-zinc-800 rounded-lg text-sm text-zinc-100 placeholder-zinc-700 focus:outline-none focus:border-emerald-500/60 focus:shadow-[0_0_15px_rgba(0,245,160,0.10)] disabled:opacity-40 transition-all duration-200"
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-warm-muted mb-1">Confirmar contraseña</label>
+              <div className="space-y-1.5">
+                <label className="block text-[10px] font-mono font-medium text-zinc-500 tracking-[0.1em] uppercase">
+                  Confirmar contraseña
+                </label>
                 <input
                   type="password"
                   value={confirm}
                   onChange={(e) => setConfirm(e.target.value)}
                   required
                   disabled={loading}
-                  className="w-full px-3 py-3 border border-warm-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent disabled:opacity-50 min-h-[44px]"
+                  autoComplete="new-password"
                   placeholder="Repetir contraseña"
+                  className="w-full px-3 py-2.5 bg-zinc-950/60 border border-zinc-800 rounded-lg text-sm text-zinc-100 placeholder-zinc-700 focus:outline-none focus:border-emerald-500/60 focus:shadow-[0_0_15px_rgba(0,245,160,0.10)] disabled:opacity-40 transition-all duration-200"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 bg-brand-600 hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors text-sm min-h-[44px]"
+                className="w-full mt-1 py-2.5 bg-emerald-500 hover:bg-emerald-400 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed text-zinc-900 font-semibold rounded-lg text-sm tracking-wide transition-all duration-200"
               >
-                {loading ? "Creando cuenta..." : "Crear cuenta"}
+                {loading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                    </svg>
+                    Creando cuenta...
+                  </span>
+                ) : (
+                  "Crear cuenta"
+                )}
               </button>
             </form>
 
-            <p className="mt-4 text-center text-sm text-warm-muted">
+            <p className="mt-5 text-center text-[11px] font-mono text-zinc-600">
               ¿Ya tenés cuenta?{" "}
-              <Link to="/login" className="text-brand-600 hover:text-brand-700 font-medium">
+              <Link
+                to="/login"
+                className="text-emerald-500 hover:text-emerald-400 transition-colors"
+              >
                 Iniciar sesión
               </Link>
             </p>
           </div>
         </div>
+
+        <p className="mt-4 text-center text-[10px] font-mono text-zinc-700 tracking-wide">
+          Proyecto educativo · No reemplaza criterio médico
+        </p>
       </div>
     </div>
   );

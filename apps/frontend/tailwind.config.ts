@@ -5,27 +5,48 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["DM Sans", "ui-sans-serif", "system-ui", "sans-serif"],
-        display: ["Instrument Serif", "ui-serif", "serif"],
+        sans: ["IBM Plex Sans", "ui-sans-serif", "system-ui", "sans-serif"],
         mono: ["JetBrains Mono", "ui-monospace", "monospace"],
       },
       colors: {
-        brand: {
-          50: "#ecfdf5",
-          100: "#d1fae5",
-          500: "#10b981",
-          600: "#047857",
-          700: "#065f46",
+        // Surgical emerald — single accent for actions, success states, high-confidence indicators
+        emerald: {
+          50:  "#ecfff9",
+          100: "#c8ffe9",
+          200: "#92ffda",
+          300: "#55f5c2",
+          400: "#22f5b2",
+          500: "#00f5a0",
+          600: "#00c47e",
+          700: "#008f5c",
+          800: "#006644",
+          900: "#004d33",
+          950: "#002a1c",
         },
-        warm: {
-          bg: "#f5f4f0",
-          surface2: "#f0efeb",
-          border: "#e4e2dc",
-          "border-subtle": "#ede9e2",
-          text: "#1a1a1e",
-          muted: "#6b6b72",
-          faint: "#a0a0a8",
+      },
+      keyframes: {
+        "scan-line": {
+          "0%, 100%": { top: "8%" },
+          "50%":       { top: "86%" },
         },
+        "bar-grow": {
+          "0%":   { width: "0%" },
+          "100%": { width: "var(--bar-w)" },
+        },
+        "pulse-dot": {
+          "0%, 100%": { opacity: "1" },
+          "50%":      { opacity: "0.3" },
+        },
+        "fade-in": {
+          "0%":   { opacity: "0", transform: "translateY(6px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+      },
+      animation: {
+        "scan-line": "scan-line 2s ease-in-out infinite",
+        "bar-grow":  "bar-grow 0.8s ease-out forwards",
+        "pulse-dot": "pulse-dot 1.2s ease-in-out infinite",
+        "fade-in":   "fade-in 0.35s cubic-bezier(0.16,1,0.3,1) forwards",
       },
     },
   },

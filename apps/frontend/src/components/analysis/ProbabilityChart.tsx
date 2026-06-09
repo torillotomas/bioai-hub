@@ -6,40 +6,54 @@ interface ProbabilityChartProps {
   topN?: number;
 }
 
-const DEFAULT_COLOR = "bg-brand-600";
-const HIGH_CONFIDENCE_COLOR = "bg-red-600";
-
 export function ProbabilityChart({ scores, prediction, topN = 8 }: ProbabilityChartProps) {
   const sorted = Object.entries(scores)
     .sort(([, a], [, b]) => b - a)
     .slice(0, topN);
 
   return (
-    <div className="space-y-3">
-      {sorted.map(([label, score]) => {
-        const pct = Math.round(score * 100);
+    <div className="space-y-2.5">
+      {sorted.map(([label, score], i) => {
+        const pct      = Math.round(score * 100);
         const isWinner = label === prediction;
-        const barColor = score >= 0.6 ? HIGH_CONFIDENCE_COLOR : DEFAULT_COLOR;
+        const isNormal = label === "No Finding";
+        const isHigh   = score >= 0.6 && !isNormal;
+        const isMid    = score >= 0.3 && score < 0.6 && !isNormal;
+
+        const barColor = isWinner
+          ? isNormal ? "bg-emerald-500" : isHigh ? "bg-red-500" : isMid ? "bg-amber-500" : "bg-zinc-500"
+          : "bg-zinc-800";
+
+        const accentBorder = isNormal ? "border-emerald-500/50"
+                           : isHigh   ? "border-red-500/50"
+                           : isMid    ? "border-amber-500/50"
+                           :            "border-zinc-600/40";
+
+        const labelClass = isWinner ? "text-zinc-200 font-medium" : "text-zinc-500";
+        const pctClass   = isWinner
+          ? isNormal ? "text-emerald-400" : isHigh ? "text-red-400" : isMid ? "text-amber-400" : "text-zinc-400"
+          : "text-zinc-700";
 
         return (
-          <div key={label}>
-            <div className="flex justify-between items-center mb-1">
-              <span className={`text-sm font-medium ${isWinner ? "text-warm-text" : "text-warm-muted"}`}>
+          <div
+            key={label}
+            className={`pl-2.5 border-l-2 ${isWinner ? accentBorder : "border-transparent"}`}
+          >
+            <div className="flex justify-between items-baseline mb-1.5">
+              <span className={`text-[11px] font-mono ${labelClass}`}>
                 {translatePathology(label)}
-                {isWinner && (
-                  <span className="ml-2 text-xs font-semibold px-1.5 py-0.5 rounded bg-warm-surface2 text-warm-muted">
-                    predicción
-                  </span>
-                )}
               </span>
-              <span className={`text-sm font-bold ${isWinner ? "text-warm-text" : "text-warm-faint"}`}>
+              <span className={`text-[11px] font-mono font-semibold tabular-nums ${pctClass}`}>
                 {pct}%
               </span>
             </div>
-            <div className="w-full bg-warm-surface2 rounded-full h-3">
+            <div className="w-full bg-zinc-900/80 rounded-full h-1.5 overflow-hidden">
               <div
-                className={`h-3 rounded-full transition-all duration-700 ${barColor} ${!isWinner ? "opacity-40" : ""}`}
-                style={{ width: `${pct}%` }}
+                className={`h-full rounded-full animate-bar ${barColor}`}
+                style={{
+                  "--bar-w": `${pct}%`,
+                  animationDelay: `${i * 55}ms`,
+                } as React.CSSProperties}
               />
             </div>
           </div>

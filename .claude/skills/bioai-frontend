@@ -1,0 +1,15 @@
+---
+name: bioai-frontend
+description: Reglas de interfaz de alta fidelidad para la plataforma de diagnóstico médico por IA BioAI Hub.
+trigger: al modificar, refactorizar o diseñar componentes de la aplicación web en apps/frontend.
+---
+
+## Identidad Visual y Estética (Medical Cyberpunk / Premium Lab)
+* **Tema:** Modo oscuro nativo (Fondo principal: `#09090b` o `#0b0f19`). El modo claro actual no transmite la naturaleza de una IA que analiza imágenes médicas oscuras (radiografías).
+* **Colores de acento:** Reemplazar el verde genérico por un verde esmeralda quirúrgico eléctrico (`#00f5a0` o `emerald-500`) o un azul cian de laboratorio (`#00d2ff`), usado exclusivamente para elementos de acción e indicadores de alta confianza.
+* **Tipografía:** Encabezados en tipografía monoespaciada limpia (`font-mono`) para dar aspecto de consola de datos o software de precisión, combinada con una sans-serif geométrica para lectura.
+
+## Layout y Experiencia de Usuario (UI/UX)
+* **Área de Dropzone:** Debe parecer un escáner activo. Líneas sutiles, microanimaciones de escaneo cuando se procesa la imagen.
+* **Visualización del Diagnóstico:** La radiografía original y el overlay Grad-CAM deben mostrarse en un contenedor destacado, permitiendo un slider comparativo (Antes/Después) o un toggle rápido para activar/desactivar el mapa de calor.
+* **Métricas de IA:** Los scores de patologías no deben ser texto plano; usar barras de progreso de precisión con gradientes mínimos o gráficos de dispersión/radiales compactos.
