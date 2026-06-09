@@ -10,6 +10,29 @@ Proyecto personal de aprendizaje. Quería construir algo end-to-end que funciona
 
 ---
 
+## Resultados del modelo
+
+EfficientNet-B3 entrenado sobre NIH ChestX-ray14 (112k radiografías, 14 patologías):
+
+![AUC-ROC por patología](notebooks/transfer_learning/efficientnet_auc_por_patologia.png)
+
+| Métrica | Valor |
+|---|---|
+| AUC-ROC promedio (test set) | **0.785** |
+| AUC-ROC promedio (val set) | 0.820 |
+| Mejor patología | Hernia — 0.897 |
+| Peor patología | Pneumonia — 0.689 |
+| Parámetros | ~12M |
+| Entrenado en | RTX 3070 · ~8h |
+
+Referencia: CheXNet (DenseNet121) reporta 0.841 con más datos de augmentation y entrenamiento más largo.
+
+**Grad-CAM** — el modelo mira las zonas anatómicamente correctas:
+
+![GradCAM sample](notebooks/transfer_learning/gradcam_samples/gradcam_00011226_030.png)
+
+---
+
 ## Qué hace
 
 Subís una radiografía de tórax y en unos segundos tenés:
