@@ -23,7 +23,7 @@ EfficientNet-B3 entrenado sobre NIH ChestX-ray14 (112k radiografías, 14 patolog
 | Mejor patología | Hernia — 0.897 |
 | Peor patología | Pneumonia — 0.689 |
 | Parámetros | ~12M |
-| Entrenado en | RTX 3070 · ~8h |
+| Entrenado en | AMD Ryzen 5 7520U (CPU) · ~18h |
 
 Referencia: CheXNet (DenseNet121) reporta 0.841 con más datos de augmentation y entrenamiento más largo.
 
@@ -84,7 +84,7 @@ Además de la app, tengo una serie de notebooks donde fui construyendo el pipeli
 |---|---|
 | `efficientnet_nih.ipynb` | Fine-tuning de EfficientNet-B3 (ImageNet) sobre NIH ChestX-ray14 · dos fases (backbone congelado → descongelado) · AUC-ROC 0.785 en test · Grad-CAM sobre las 14 patologías |
 
-El entrenamiento lo corrí localmente sobre una RTX 3070. Fase 1 (3 epochs, solo clasificador): AUC val 0.711. Fase 2 (5 epochs, backbone completo): AUC val 0.820 / AUC test 0.785. Los papers de referencia (CheXNet, DenseNet121) reportan 0.84 con arquitecturas más grandes y más tiempo de entrenamiento.
+El entrenamiento lo corrí localmente en CPU (AMD Ryzen 5 7520U, 16GB RAM). Fase 1 (3 epochs, solo clasificador): AUC val 0.711. Fase 2 (5 epochs, backbone completo): AUC val 0.820 / AUC test 0.785. Los papers de referencia (CheXNet, DenseNet121) reportan 0.84 con arquitecturas más grandes y más tiempo de entrenamiento.
 
 El notebook incluye Grad-CAM sobre el último bloque convolucional (`model.features[-1]`, resolución 7×7×1536). Muestras en [`gradcam_samples/`](notebooks/transfer_learning/gradcam_samples/).
 
