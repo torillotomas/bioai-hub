@@ -15,17 +15,16 @@ export function HeatmapOverlay({ heatmapB64, prediction }: HeatmapOverlayProps) 
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <p className="text-[9px] font-mono uppercase tracking-[0.18em] text-zinc-700">
-          Grad-CAM · activación
+        <p className="text-[10px] font-medium uppercase tracking-widest text-gray-400">
+          Grad-CAM — activación
         </p>
-        {/* Toggle buttons */}
-        <div className="flex items-center gap-1 bg-zinc-900 border border-zinc-800 rounded-lg p-0.5">
+        <div className="flex items-center gap-1 bg-gray-100 border border-gray-200 rounded-lg p-0.5">
           <button
             onClick={() => setMode("heatmap")}
             className={`px-2 py-1 rounded-md text-xs font-mono transition-colors ${
               mode === "heatmap"
-                ? "bg-zinc-700 text-zinc-100"
-                : "text-zinc-500 hover:text-zinc-300"
+                ? "bg-white shadow-sm text-gray-800"
+                : "text-gray-500 hover:text-gray-700"
             }`}
           >
             Heatmap
@@ -34,8 +33,8 @@ export function HeatmapOverlay({ heatmapB64, prediction }: HeatmapOverlayProps) 
             onClick={() => setMode("split")}
             className={`px-2 py-1 rounded-md text-xs font-mono transition-colors ${
               mode === "split"
-                ? "bg-zinc-700 text-zinc-100"
-                : "text-zinc-500 hover:text-zinc-300"
+                ? "bg-white shadow-sm text-gray-800"
+                : "text-gray-500 hover:text-gray-700"
             }`}
           >
             Split
@@ -43,7 +42,7 @@ export function HeatmapOverlay({ heatmapB64, prediction }: HeatmapOverlayProps) 
         </div>
       </div>
 
-      <div className="relative rounded-xl overflow-hidden border border-zinc-800 bg-zinc-950">
+      <div className="relative rounded-xl overflow-hidden border border-gray-200 bg-gray-100">
         {mode === "heatmap" ? (
           <>
             <img
@@ -51,18 +50,16 @@ export function HeatmapOverlay({ heatmapB64, prediction }: HeatmapOverlayProps) 
               alt={`Grad-CAM — ${prediction}`}
               className="w-full object-cover"
             />
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent px-3 py-3">
-              <p className="text-xs text-zinc-400 font-mono">
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent px-3 py-3">
+              <p className="text-xs text-white/80 font-mono">
                 Zonas rojas → mayor activación del modelo
               </p>
             </div>
           </>
         ) : (
           <div className="relative select-none">
-            {/* Base: heatmap full width */}
             <img src={src} alt={`Grad-CAM — ${prediction}`} className="w-full object-cover" />
 
-            {/* Overlay: same heatmap with clip — simulates "original" side via blend */}
             <div
               className="absolute inset-0 overflow-hidden"
               style={{ width: `${splitPct}%` }}
@@ -78,13 +75,11 @@ export function HeatmapOverlay({ heatmapB64, prediction }: HeatmapOverlayProps) 
               />
             </div>
 
-            {/* Divider line */}
             <div
-              className="absolute top-0 bottom-0 w-px bg-white/60 shadow-[0_0_8px_2px_rgba(255,255,255,0.3)]"
+              className="absolute top-0 bottom-0 w-px bg-white/70 shadow-[0_0_6px_2px_rgba(255,255,255,0.4)]"
               style={{ left: `${splitPct}%` }}
             />
 
-            {/* Drag range */}
             <input
               type="range"
               min={5}
@@ -94,14 +89,13 @@ export function HeatmapOverlay({ heatmapB64, prediction }: HeatmapOverlayProps) 
               className="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize"
             />
 
-            {/* Labels */}
             <div className="absolute bottom-2 left-2">
-              <span className="text-[10px] font-mono text-white/70 bg-black/50 px-1.5 py-0.5 rounded">
+              <span className="text-[10px] font-mono text-white/80 bg-black/50 px-1.5 py-0.5 rounded">
                 Original
               </span>
             </div>
             <div className="absolute bottom-2 right-2">
-              <span className="text-[10px] font-mono text-white/70 bg-black/50 px-1.5 py-0.5 rounded">
+              <span className="text-[10px] font-mono text-white/80 bg-black/50 px-1.5 py-0.5 rounded">
                 Grad-CAM
               </span>
             </div>

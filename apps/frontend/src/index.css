@@ -4,112 +4,41 @@
 
 /* ── Design tokens ─────────────────────────────────────────── */
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 
-  /* Backgrounds */
-  --bg-base:   #09090b;                  /* zinc-950 — immersive base */
-  --bg-raised: #18181b;                  /* zinc-900 — raised surfaces */
-  --bg-card:   rgba(24, 24, 27, 0.40);   /* zinc-900/40 — glass cards */
+  --accent:       #4f46e5;   /* indigo-600 */
+  --accent-hover: #4338ca;   /* indigo-700 */
+  --accent-light: #eef2ff;   /* indigo-50  */
+  --accent-ring:  rgba(79, 70, 229, 0.20);
 
-  /* Borders */
-  --border-card:    rgba(39, 39, 42, 0.80);  /* zinc-800/80 — card edge */
-  --border-default: #3f3f46;                 /* zinc-700 — inputs, dividers */
-
-  /* Accent — surgical emerald (exclusive for primary actions, success, high-confidence) */
-  --accent:       #00f5a0;
-  --accent-dim:   #00c47e;
-  --accent-ghost: rgba(0, 245, 160, 0.10);
-  --accent-ring:  rgba(0, 245, 160, 0.25);
-
-  /* Text */
-  --text-primary:   #e4e4e7;  /* zinc-200 */
-  --text-secondary: #a1a1aa;  /* zinc-400 */
-  --text-muted:     #71717a;  /* zinc-500 */
-
-  /* Status semantics */
-  --status-ok:   #00f5a0;  /* = accent */
-  --status-warn: #fbbf24;  /* amber-400 */
-  --status-err:  #f87171;  /* red-400   */
-  --status-info: #22d3ee;  /* cyan-400  */
+  --status-normal: #2563eb;  /* blue-600   */
+  --status-high:   #ea580c;  /* orange-600 */
+  --status-mid:    #d97706;  /* amber-600  */
+  --status-low:    #6b7280;  /* gray-500   */
 }
 
 /* ── Base ──────────────────────────────────────────────────── */
 body {
-  background-color: var(--bg-base);
-  color: var(--text-primary);
+  background-color: #f9fafb;   /* gray-50 */
+  color: #111827;               /* gray-900 */
   font-feature-settings: "ss01" 1, "cv05" 1;
 }
 
 /* ── Scrollbar ─────────────────────────────────────────────── */
 ::-webkit-scrollbar             { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track       { background: transparent; }
-::-webkit-scrollbar-thumb       { background: #3f3f46; border-radius: 9999px; }
-::-webkit-scrollbar-thumb:hover { background: var(--accent-dim); }
-
-/* ── Select ────────────────────────────────────────────────── */
-select option { background-color: #18181b; color: #e4e4e7; }
+::-webkit-scrollbar-thumb       { background: #d1d5db; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
 
 /* ── Animations ────────────────────────────────────────────── */
-@keyframes scan-line {
-  0%, 100% { top: 8%; }
-  50%       { top: 86%; }
-}
-.animate-scan { animation: scan-line 2s ease-in-out infinite; }
-
 @keyframes bar-grow {
   from { width: 0; }
   to   { width: var(--bar-w, 0%); }
 }
 .animate-bar { animation: bar-grow 0.9s cubic-bezier(.22,1,.36,1) forwards; }
 
-/* ── Component utilities ───────────────────────────────────── */
-@layer components {
-  /* Immersive glass card — bg-zinc-900/40 + border-zinc-800/80 + backdrop-blur */
-  .card-glass {
-    background-color: var(--bg-card);
-    border: 1px solid var(--border-card);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-  }
-
-  /* Mono micro-label — section tags, data readouts, timestamps, identifiers */
-  .label-mono {
-    font-family: "JetBrains Mono", ui-monospace, monospace;
-    font-size: 0.6875rem;
-    font-weight: 500;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-  }
-
-  /* Accent pill — high-confidence indicators, success states, primary tags */
-  .badge-accent {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0.125rem 0.5rem;
-    border-radius: 9999px;
-    background-color: var(--accent-ghost);
-    border: 1px solid var(--accent-ring);
-    color: var(--accent);
-    font-family: "JetBrains Mono", ui-monospace, monospace;
-    font-size: 0.625rem;
-    font-weight: 600;
-    letter-spacing: 0.10em;
-    text-transform: uppercase;
-  }
-
-  /* Accent focus ring — inputs, selects, interactive elements */
-  .focus-accent:focus {
-    outline: none;
-    border-color: rgba(0, 245, 160, 0.60);
-    box-shadow: 0 0 0 3px var(--accent-ghost);
-  }
-}
-
 /* ── Reduced motion ────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  .animate-scan,
   .animate-bar,
   .animate-pulse-dot,
   .animate-fade-in {

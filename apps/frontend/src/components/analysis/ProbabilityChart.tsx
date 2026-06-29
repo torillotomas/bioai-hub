@@ -21,23 +21,23 @@ export function ProbabilityChart({ scores, prediction, topN = 8 }: ProbabilityCh
         const isMid    = score >= 0.3 && score < 0.6 && !isNormal;
 
         const barColor = isWinner
-          ? isNormal ? "bg-emerald-500" : isHigh ? "bg-red-500" : isMid ? "bg-amber-500" : "bg-zinc-500"
-          : "bg-zinc-800";
+          ? isNormal ? "bg-blue-500" : isHigh ? "bg-orange-500" : isMid ? "bg-amber-500" : "bg-gray-400"
+          : "bg-gray-200";
 
-        const accentBorder = isNormal ? "border-emerald-500/50"
-                           : isHigh   ? "border-red-500/50"
-                           : isMid    ? "border-amber-500/50"
-                           :            "border-zinc-600/40";
+        const leftBorder = isNormal ? "border-blue-300"
+                         : isHigh   ? "border-orange-300"
+                         : isMid    ? "border-amber-300"
+                         :            "border-gray-300";
 
-        const labelClass = isWinner ? "text-zinc-200 font-medium" : "text-zinc-500";
+        const labelClass = isWinner ? "text-gray-800 font-medium" : "text-gray-400";
         const pctClass   = isWinner
-          ? isNormal ? "text-emerald-400" : isHigh ? "text-red-400" : isMid ? "text-amber-400" : "text-zinc-400"
-          : "text-zinc-700";
+          ? isNormal ? "text-blue-600" : isHigh ? "text-orange-600" : isMid ? "text-amber-600" : "text-gray-500"
+          : "text-gray-300";
 
         return (
           <div
             key={label}
-            className={`pl-2.5 border-l-2 ${isWinner ? accentBorder : "border-transparent"}`}
+            className={`pl-2.5 border-l-2 ${isWinner ? leftBorder : "border-transparent"}`}
           >
             <div className="flex justify-between items-baseline mb-1.5">
               <span className={`text-[11px] font-mono ${labelClass}`}>
@@ -47,7 +47,7 @@ export function ProbabilityChart({ scores, prediction, topN = 8 }: ProbabilityCh
                 {pct}%
               </span>
             </div>
-            <div className="w-full bg-zinc-900/80 rounded-full h-1.5 overflow-hidden">
+            <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
               <div
                 className={`h-full rounded-full animate-bar ${barColor}`}
                 style={{
