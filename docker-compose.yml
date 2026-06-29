@@ -44,7 +44,6 @@ services:
       - MODEL_VERSION=v3.0.0
     volumes:
       - ./apps/ai-service:/app
-      - C:/nih_training/efficientnet_b3_nih_final.pth:/app/models/efficientnet_b3_nih_final.pth:ro
 
 networks:
   default:
