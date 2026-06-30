@@ -69,11 +69,29 @@ export class AnalysisService {
     };
   }
 
-  async findAll(userId: string): Promise<Analysis[]> {
-    return this.analysisRepo.find({
+  async findAll(userId: string): Promise<AnalysisResponseDto[]> {
+    const entities = await this.analysisRepo.find({
       where: { user_id: userId },
       order: { created_at: "DESC" },
       take: 20,
     });
+
+    return entities.map((e) => ({
+      analysis_id: e.analysis_id,
+      status: "completed" as const,
+      result: {
+        prediction: e.prediction,
+        confidence: e.confidence,
+        class_scores: e.class_scores,
+        model_version: e.model_version,
+        inference_time_ms: e.inference_time_ms,
+        heatmap_b64: e.heatmap_b64 ?? undefined,
+      },
+      audit: {
+        processed_at: e.created_at.toISOString(),
+        node_version: "",
+        image_hash_sha256: e.image_hash_sha256,
+      },
+    }));
   }
 }

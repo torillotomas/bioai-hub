@@ -2,6 +2,19 @@ import axios from "axios";
 import { apiClient } from "./apiClient";
 import type { AnalysisResponse, AnalysisErrorResponse } from "../types/analysis";
 
+export async function fetchHistory(): Promise<AnalysisResponse[]> {
+  try {
+    const { data } = await apiClient.get<AnalysisResponse[]>("/api/v1/analysis");
+    return data;
+  } catch (err) {
+    if (axios.isAxiosError(err) && err.response) {
+      const data = err.response.data as AnalysisErrorResponse;
+      throw new Error(data.error ?? "Error al cargar el historial");
+    }
+    throw new Error("No se pudo conectar con el servidor");
+  }
+}
+
 export async function analyzeImage(
   file: File,
   patientId: string,

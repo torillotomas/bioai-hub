@@ -1,6 +1,4 @@
 export interface ClassScores {
-  NORMAL: number;
-  PNEUMONIA: number;
   [label: string]: number;
 }
 
