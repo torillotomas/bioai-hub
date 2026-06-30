@@ -10,6 +10,14 @@ Proyecto personal de aprendizaje. Quería construir algo end-to-end que funciona
 
 ---
 
+## Screenshots
+
+| Login | Dashboard | Resultado + Grad-CAM |
+|:---:|:---:|:---:|
+| ![Login](docs/screenshots/login.png) | ![Dashboard](docs/screenshots/dashboard.png) | ![Resultado](docs/screenshots/result.png) |
+
+---
+
 ## Resultados del modelo
 
 EfficientNet-B3 entrenado sobre NIH ChestX-ray14 (112k radiografías, 14 patologías):
@@ -123,11 +131,11 @@ cd apps/backend && pnpm run dev
 cd apps/frontend && pnpm run dev
 ```
 
-Abrí http://localhost:5173. La primera vez que arranca el servicio de IA descarga el modelo, esperá unos segundos antes del primer análisis.
+Abrí http://localhost:5173. El modelo se carga desde `MODEL_PATH` configurado en `.env` — asegurate que el archivo `.pth` esté en esa ruta antes de levantar.
 
 ## API
 
-Requiere JWT. Registrarse en `POST /auth/register` y obtener token en `POST /auth/login`.
+Requiere JWT. Registrarse en `POST /api/v1/auth/register` y obtener token en `POST /api/v1/auth/login`.
 
 ### `POST /api/v1/analysis`
 
